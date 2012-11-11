@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "main.h"
 
@@ -40,14 +41,19 @@ void read_file_names(){
 }
 
 void read_file(char name[MAX_FILENAME_LENGTH], void (*read_file_func) (FILE *)){
-   
     FILE *file;
-    file = fopen(name, "r");
+    char filepath[FILE_PATH_SIZE];
+    strcpy(filepath, "res/");
+    strcat(filepath, name);
+    
+    file = fopen(filepath, "r");
     if(file != NULL) {
         /*file opened successfully, read it.*/
         read_file_func(file);
     } else {
+        /*couldn't open file, output error*/
         puts("Error opening file!");
+        puts(filepath);
     }
     fclose(file);
 }

@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
 #define MAX_FILENAME_LENGTH 50
+#define FILE_PATH_SIZE 54
 #define MAX_EVENT_NAME_SIZE 50
 #define MAX_DATE_SIZE 20
 #define TIME_STRING_SIZE 5

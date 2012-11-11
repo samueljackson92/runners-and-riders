@@ -9,13 +9,6 @@
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
                    projectFiles="true">
-      <itemPath>../../Downloads/courses.txt</itemPath>
-      <itemPath>../../Downloads/cp_times_1.txt</itemPath>
-      <itemPath>../../Downloads/cp_times_2.txt</itemPath>
-      <itemPath>../../Downloads/entrants.txt</itemPath>
-      <itemPath>../../Downloads/name.txt</itemPath>
-      <itemPath>../../Downloads/nodes.txt</itemPath>
-      <itemPath>../../Downloads/tracks.txt</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
