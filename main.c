@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "main.h"
+#include "fileio.h"
 #include "structures.h"
 
 int main(int argc, char** argv) {

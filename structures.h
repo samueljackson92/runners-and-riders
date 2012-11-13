@@ -21,14 +21,16 @@ enum check_point {
     CP, JN, MC
 };
 
-enum boolean {
-    TRUE, FALSE
-};
+typedef struct neighbour_node {
+    int node;
+    struct neighbour_node *next;
+}Neighbour_node;
 
 /*structure to hold information about a node and a pointer to the next node*/
 typedef struct node {
     enum check_point type;
     int num;
+    Neighbour_node *neighbours;
 } Node;
 
 /*structure to hold information about a track and the two nodes it points to.*/
@@ -45,12 +47,26 @@ typedef struct course {
     int *nodes;
 } Course;
 
+/*Structure to hold information about an entrants status in the competition*/
+typedef struct status {
+    enum type_status {
+        NOT_STARTED,
+        MC_CHECKPOINT,
+        ON_TRACK,
+        TIME_CHECKPOINT,
+        COMPLETED,
+        EXCLUDED_MC,
+        EXCLUDED_IR
+    } type;
+    int location_ref; /*i.e. track number, node number etc.*/
+} Status;
+
 /*Structure to hold information about an entrant in the competition.*/
 typedef struct entrant {
     int number;
-    enum boolean excluded;
     char course;
     char name[MAX_ENTRANT_NAME_SIZE];
+    Status state;
 } Entrant;
 
 typedef struct checkpoint_data {

@@ -124,7 +124,6 @@ void read_entrants(FILE *file, Event *e) {
     e->entrantlist = malloc(line_count * sizeof(Entrant));
     
     do {
-        e->entrantlist[i].excluded = FALSE;
         status = fscanf(file, " %d %c %[a-zA-Z ]s", &e->entrantlist[i].number,
                 &e->entrantlist[i].course, e->entrantlist[i].name);
         i++;
