@@ -12,6 +12,8 @@
 extern "C" {
 #endif
 
+#include "structures.h"
+
 #ifdef	__cplusplus
 }
 #endif

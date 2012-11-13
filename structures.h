@@ -25,13 +25,6 @@ enum boolean {
     TRUE, FALSE
 };
 
-/*structure to hold details about a single event*/
-typedef struct event {
-    char name[MAX_EVENT_NAME_SIZE];
-    char date[MAX_DATE_SIZE];
-    char start_time[TIME_STRING_SIZE];
-} Event;
-
 /*structure to hold information about a node and a pointer to the next node*/
 typedef struct node {
     enum check_point type;
@@ -66,6 +59,17 @@ typedef struct checkpoint_data {
     char type;
     char time[TIME_STRING_SIZE];
 } CP_Data;
+
+/*structure to hold details about a single event*/
+typedef struct event {
+    char name[MAX_EVENT_NAME_SIZE];
+    char date[MAX_DATE_SIZE];
+    char start_time[TIME_STRING_SIZE];
+    Node *nodelist;
+    Track *tracklist;
+    Course *courselist;
+    Entrant *entrantlist;
+} Event;
 
 #ifdef	__cplusplus
 }
