@@ -91,10 +91,10 @@ typedef struct event {
     char date[MAX_DATE_SIZE];
     char start_time[TIME_STRING_SIZE];
     int no_of_entrants;
-    List_Node *nodelist;
-    List_Node *tracklist;
-    List_Node *courselist;
-    List_Node *entrantlist;
+    Linked_List nodelist;
+    Linked_List tracklist;
+    Linked_List courselist;
+    Linked_List entrantlist;
 } Event;
 
 #ifdef	__cplusplus

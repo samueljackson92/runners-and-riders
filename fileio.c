@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
 #include "fileio.h"
 #include "structures.h"
 #include "linked_list.h"
@@ -61,11 +62,6 @@ void read_event_details(FILE *file, Event *e){
     fscanf(file, " %[0-9:]s", e->start_time);
 }
 
-void print_node(List_Node * l) {
-    Node *n = (Node*) l->data;
-    printf("%d\n", n->num);
-}
-
 void read_nodes(FILE *file, Event *e){
     int status, num;
     Node *node; /*new node to store data */
@@ -81,16 +77,13 @@ void read_nodes(FILE *file, Event *e){
         if(status != EOF){
             node->num = num;
             node->type = CP;
-            new->data = node;
             
-            if(e->nodelist == NULL) {
-                e->nodelist = new;
-            } else {
-                add_element(e->nodelist, new);
-            }
+            new->data = node;
+            new->next = NULL;
+            
+            add_element(&e->nodelist, new);
         }
     } while (status != EOF);
-    traverse_list(e->nodelist, &print_node);
 }
 void read_courses (FILE *file, Event *e) {
     int status, i=0;
@@ -116,11 +109,7 @@ void read_courses (FILE *file, Event *e) {
             course->path_size = path_size;
             course->nodes = nodes;
             node->data = course;
-            if(e->courselist == NULL) {
-               e->courselist = node;
-            } else {
-                add_element(e->courselist, node);
-            }
+            add_element(&e->courselist, node);
         }
     } while (status != EOF);
 }
@@ -137,12 +126,8 @@ void read_tracks(FILE *file, Event *e) {
                 &track->nodea, &track->nodeb, &track->time);
         
         new->data = track;
-        
-        if(e->tracklist == NULL) {
-            e->tracklist = new;
-        } else {
-            add_element(e->tracklist, new);
-        }
+
+        add_element(&e->tracklist, new);
     } while (status != EOF);
 }
 
@@ -150,8 +135,6 @@ void read_entrants(FILE *file, Event *e) {
     int status;
     Entrant *entrant;
     List_Node *new;
-
-    e->entrantlist = NULL;
     
     do {
         entrant = malloc(sizeof(Entrant));
@@ -163,17 +146,14 @@ void read_entrants(FILE *file, Event *e) {
         new->data = entrant;
         new->next = NULL;
         
-        if(e->entrantlist == NULL) {
-            e->entrantlist = new;
-        } else {
-            add_element(e->entrantlist, new);
-        }
+        add_element(&e->entrantlist, new);
+        
     } while(status != EOF);
 }
 
 void read_checkpoint_data(FILE * file) {
     int status;
-    List_Node *cp_data_list = NULL;
+    Linked_List cp_data_list;
     List_Node *node;
     CP_Data *data;
     do {
@@ -183,11 +163,7 @@ void read_checkpoint_data(FILE * file) {
                 &data->node, &data->competitor, data->time);
         
         node->data = data;
-        if(cp_data_list == NULL) {
-            cp_data_list = node;
-        } else {
-            add_element(cp_data_list, node);
-        }
+        add_element(&cp_data_list, node);
     } while(status != EOF);
 }
 

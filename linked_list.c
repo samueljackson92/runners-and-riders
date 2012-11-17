@@ -2,11 +2,13 @@
 
 #include "linked_list.h"
 
-void add_element(List_Node *current, List_Node *new) {
-    if(current->next == NULL) {
-        current->next = new;
-    } else {
-        add_element(current->next, new);
+void add_element(Linked_List *list, List_Node *new) {
+    if(list->head == NULL) {
+        list->head = new;
+        list->tail = new;
+    } else if(list->tail->next == NULL) {
+        list->tail->next = new;
+        list->tail = new;
     }
 }
 

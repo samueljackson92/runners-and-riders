@@ -22,7 +22,7 @@ char * convert_type_status(enum type_status type, char * output) {
     return output;
 }
 
-void queryCompetitor(List_Node *el) {
+void queryCompetitor(Linked_List *el) {
 
 }
 
@@ -34,10 +34,14 @@ int main(int argc, char** argv) {
     int option;
     Event *e = malloc(sizeof(Event));
     
-    e->courselist = NULL;
-    e->entrantlist = NULL;
-    e->nodelist = NULL;
-    e->tracklist = NULL;
+    e->courselist.head = NULL;
+    e->courselist.tail = NULL;
+    e->entrantlist.head = NULL;
+    e->entrantlist.tail = NULL;
+    e->nodelist.head = NULL;
+    e->nodelist.tail = NULL;
+    e->tracklist.head = NULL;
+    e->tracklist.tail = NULL;
     
     read_file_data(e);
     
@@ -51,7 +55,7 @@ int main(int argc, char** argv) {
         scanf("%d", &option);
         switch(option) {
             case 1:
-                queryCompetitor(e->entrantlist);
+                queryCompetitor(&e->entrantlist);
                 break;
         }
     } while (option != 0);

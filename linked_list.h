@@ -17,7 +17,12 @@ typedef struct list_node {
     struct list_node *next;
 }List_Node;
 
-void add_element(List_Node *, List_Node *);
+typedef struct linked_list {
+    List_Node *head;
+    List_Node *tail;
+}Linked_List;
+
+void add_element(Linked_List *, List_Node *);
 void traverse_list(List_Node *current, void (*process_node) (List_Node *node));
 
 #ifdef	__cplusplus
