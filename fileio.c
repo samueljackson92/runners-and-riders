@@ -3,6 +3,7 @@
 #include <string.h>
 #include "fileio.h"
 #include "structures.h"
+#include "linked_list.h"
 
 void read_file_data(Event *e){
     char filename[MAX_FILENAME_LENGTH];
@@ -56,89 +57,137 @@ void read_file(char name[MAX_FILENAME_LENGTH], void (*read_file_func) (FILE *, E
 void read_event_details(FILE *file, Event *e){
     /*read in the details for the event*/
     fscanf(file, " %[A-Za-z0-9- ]s", e->name);
-    fscanf(file, " %s", e->date);
-    fscanf(file, " %s", e->start_time);
+    fscanf(file, " %[a-zA-Z0-9 ]s", e->date);
+    fscanf(file, " %[0-9:]s", e->start_time);
+}
+
+void print_node(List_Node * l) {
+    Node *n = (Node*) l->data;
+    printf("%d\n", n->num);
 }
 
 void read_nodes(FILE *file, Event *e){
-    int line_count = count_lines(file);
-    int status, i=0;
+    int status, num;
+    Node *node; /*new node to store data */
+    List_Node *new; /*new list element to wrap node*/
     char cp[3];
     
-    e->nodelist = malloc(line_count * sizeof(Node));
-    
-    if(e->nodelist == 0) {
-        puts("Cannot build node list! Out of memory!");
-    }
+    do {
+        /*assign a new batch of memory to the next node/list node*/
+        node = malloc(sizeof(Node));
+        new = malloc(sizeof(List_Node));
+        
+        status = fscanf(file, "%d %s", &num, cp);
+        if(status != EOF){
+            node->num = num;
+            node->type = CP;
+            new->data = node;
+            
+            if(e->nodelist == NULL) {
+                e->nodelist = new;
+            } else {
+                add_element(e->nodelist, new);
+            }
+        }
+    } while (status != EOF);
+    traverse_list(e->nodelist, &print_node);
+}
+void read_courses (FILE *file, Event *e) {
+    int status, i=0;
+    char name;
+    int path_size, *nodes;
+   
+    Course *course;
+    List_Node *node;
     
     do {
-        status = fscanf(file, "%d %s", &e->nodelist[i].num, cp);
-        i++;
+        course = malloc(sizeof(Course));
+        node = malloc(sizeof(List_Node));
+        
+        status = fscanf(file, " %c", &name);
+        if(status != EOF) {
+            fscanf(file, " %d", &path_size);
+            nodes = malloc(path_size * sizeof(int));
+            for (i=0; i<path_size; i++) {
+                fscanf(file, " %d", &nodes[i]);
+            }
+            
+            course->name = name;
+            course->path_size = path_size;
+            course->nodes = nodes;
+            node->data = course;
+            if(e->courselist == NULL) {
+               e->courselist = node;
+            } else {
+                add_element(e->courselist, node);
+            }
+        }
     } while (status != EOF);
 }
 
 void read_tracks(FILE *file, Event *e) {
-    int status, i =0;
-    int line_count = count_lines(file);
-    
-    e->tracklist = malloc(line_count * sizeof(Track));
-    
-    if (e->tracklist == 0) {
-        puts("Cannot build track list! Out of memory!");
-    }
+    int status;
+    Track *track;
+    List_Node *new;
     
     do {
-        status = fscanf(file, "%d %d %d %d", 
-                &e->tracklist[i].number, &e->tracklist[i].nodea, 
-                &e->tracklist[i].nodeb, &e->tracklist[i].time );
-        i++;
-    } while (status != EOF);
-}
-
-void read_courses (FILE *file, Event *e) {
-    int status, i=0, j=0;
-    int line_count = count_lines(file);
-    
-    e->courselist = malloc(line_count * sizeof(Course));
-    if(e->courselist == 0) {
-        puts("Cannot build courses list! Out of memory!");
-    }
-   
-    do {
-        status = fscanf(file, " %c", &e->courselist[i].name);
-        if(status != EOF) {
-            fscanf(file, " %d", &e->courselist[i].path_size);
-            e->courselist[i].nodes = malloc(e->courselist[i].path_size * sizeof(int));
-            for (j=0; j<e->courselist[i].path_size; j++) {
-                fscanf(file, " %d", &e->courselist[i].nodes[j]);
-            }
+        track = malloc(sizeof(Track));
+        new = malloc(sizeof(List_Node));
+        status = fscanf(file, "%d %d %d %d", &track->number, 
+                &track->nodea, &track->nodeb, &track->time);
+        
+        new->data = track;
+        
+        if(e->tracklist == NULL) {
+            e->tracklist = new;
+        } else {
+            add_element(e->tracklist, new);
         }
-        i++;
     } while (status != EOF);
-
 }
 
 void read_entrants(FILE *file, Event *e) {
-    int status, i=0;
-    int line_count = count_lines(file);
-    e->entrantlist = malloc(line_count * sizeof(Entrant));
+    int status;
+    Entrant *entrant;
+    List_Node *new;
+
+    e->entrantlist = NULL;
     
     do {
-        status = fscanf(file, " %d %c %[a-zA-Z ]s", &e->entrantlist[i].number,
-                &e->entrantlist[i].course, e->entrantlist[i].name);
-        i++;
+        entrant = malloc(sizeof(Entrant));
+        new = malloc(sizeof(List_Node));
+        status = fscanf(file, " %d %c %[a-zA-Z ]s", &entrant->number,
+                &entrant->course, entrant->name);
+        
+        entrant->state.type = NOT_STARTED;
+        new->data = entrant;
+        new->next = NULL;
+        
+        if(e->entrantlist == NULL) {
+            e->entrantlist = new;
+        } else {
+            add_element(e->entrantlist, new);
+        }
     } while(status != EOF);
 }
 
 void read_checkpoint_data(FILE * file) {
-    int status, i=0;
-    int line_count = count_lines(file);
-    CP_Data *data = malloc(line_count * sizeof(CP_Data));
-    
+    int status;
+    List_Node *cp_data_list = NULL;
+    List_Node *node;
+    CP_Data *data;
     do {
-        status = fscanf(file, " %c %d %d %5[0-9:]s", &data[i].type,
-                &data[i].node, &data[i].competitor, data[i].time);
-        i++;
+        data = malloc(sizeof(CP_Data));
+        node = malloc(sizeof(Node));
+        status = fscanf(file, " %c %d %d %5[0-9:]s", &data->type,
+                &data->node, &data->competitor, data->time);
+        
+        node->data = data;
+        if(cp_data_list == NULL) {
+            cp_data_list = node;
+        } else {
+            add_element(cp_data_list, node);
+        }
     } while(status != EOF);
 }
 
