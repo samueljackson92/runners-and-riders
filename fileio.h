@@ -39,7 +39,7 @@ void read_courses(FILE * file, Event *e);
 void read_entrants(FILE *file, Event *e);
 
 /*function to read in a data file of new checkpoint data*/
-void read_checkpoint_data(FILE *file);
+void read_checkpoint_data(FILE *file, Event *e);
 
 /*function count the number of lines in a file*/
 int count_lines(FILE *file);

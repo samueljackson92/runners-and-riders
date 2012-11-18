@@ -17,22 +17,16 @@ extern "C" {
 #define MAX_EVENT_NAME_SIZE 50
 #define MAX_ENTRANT_NAME_SIZE 50
 #define MAX_DATE_SIZE 20
-#define TIME_STRING_SIZE 5
+#define TIME_STRING_SIZE 6
 
 enum check_point {
     CP, JN, MC
 };
 
-typedef struct neighbour_node {
-    int node;
-    struct neighbour_node *next;
-}Neighbour_node;
-
 /*structure to hold information about a node and a pointer to the next node*/
 typedef struct node {
     enum check_point type;
     int num;
-    Neighbour_node *neighbours;
 } Node;
 
 /*structure to hold information about a track and the two nodes it points to.*/
@@ -40,7 +34,6 @@ typedef struct track {
     int time;
     int number;
     int nodea, nodeb;
-    struct track *next;
 } Track;
 
 /*structure to hold information about a course in the graph.*/
@@ -48,7 +41,6 @@ typedef struct course {
     char name;
     int path_size;
     int *nodes;
-    struct course *next;
 } Course;
 
 enum type_status {
@@ -66,7 +58,6 @@ typedef struct checkpoint_data {
     int node;
     char type;
     char time[TIME_STRING_SIZE];
-    struct checkpoint_data *next;
 } CP_Data;
 
 /*Structure to hold information about an entrants status in the competition*/
@@ -82,7 +73,7 @@ typedef struct entrant {
     char course;
     char name[MAX_ENTRANT_NAME_SIZE];
     Status state;
-    struct entrant *next;
+    CP_Data cp_data;
 } Entrant;
 
 /*structure to hold details about a single event*/
@@ -95,6 +86,7 @@ typedef struct event {
     Linked_List tracklist;
     Linked_List courselist;
     Linked_List entrantlist;
+    Linked_List cp_data_buff;
 } Event;
 
 #ifdef	__cplusplus

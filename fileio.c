@@ -68,8 +68,7 @@ void read_nodes(FILE *file, Event *e){
     List_Node *new; /*new list element to wrap node*/
     char cp[3];
     
-    do {
-        /*assign a new batch of memory to the next node/list node*/
+    do {/*assign a new batch of memory to the next node/list node*/
         node = malloc(sizeof(Node));
         new = malloc(sizeof(List_Node));
         
@@ -86,32 +85,39 @@ void read_nodes(FILE *file, Event *e){
     } while (status != EOF);
 }
 void read_courses (FILE *file, Event *e) {
-    int status, i=0;
+    int status, i;
     char name;
-    int path_size, *nodes;
+    int path_size;
    
     Course *course;
     List_Node *node;
     
-    do {
+    while (!feof(file)) {
+        path_size = 0;
         course = malloc(sizeof(Course));
         node = malloc(sizeof(List_Node));
         
         status = fscanf(file, " %c", &name);
         if(status != EOF) {
             fscanf(file, " %d", &path_size);
-            nodes = malloc(path_size * sizeof(int));
+
+            course->nodes = malloc(path_size * sizeof(int));
+            
             for (i=0; i<path_size; i++) {
-                fscanf(file, " %d", &nodes[i]);
+                fscanf(file, " %d", &course->nodes[i]);
             }
             
             course->name = name;
             course->path_size = path_size;
-            course->nodes = nodes;
+            
+            printf("%d\n", course->path_size);
+            for (i=0; i<course->path_size; i++){
+                printf("%d\n", course->nodes[i]);
+            }
             node->data = course;
             add_element(&e->courselist, node);
         }
-    } while (status != EOF);
+    }
 }
 
 void read_tracks(FILE *file, Event *e) {
@@ -151,7 +157,7 @@ void read_entrants(FILE *file, Event *e) {
     } while(status != EOF);
 }
 
-void read_checkpoint_data(FILE * file) {
+void read_checkpoint_data(FILE * file, Event *e) {
     int status;
     Linked_List cp_data_list;
     List_Node *node;
@@ -165,16 +171,6 @@ void read_checkpoint_data(FILE * file) {
         node->data = data;
         add_element(&cp_data_list, node);
     } while(status != EOF);
-}
-
-int count_lines(FILE *file){
-    char line[1024];
-    int count = 0;
     
-    while(fgets(line, sizeof(line), file) != NULL){
-        count++;
-    }
-    
-    rewind(file);
-    return count;
+    e->cp_data_buff = cp_data_list;
 }
