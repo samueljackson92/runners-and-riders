@@ -223,6 +223,22 @@ void read_updates(Event *e) {
     update_others(e, cp_data.competitor);
 }
 
+void print_results(Event *e){
+    int i;
+    Entrant *entrant;
+    printf("----------------------------------------------------------\n");
+    printf("|Competitor           |  Course  |  Start Time |  End Time |  Total|\n");
+    printf("|--------------------------------------------------------|\n");
+    
+    for (i=0; i< e->no_of_entrants-1; i++) {
+        entrant = (Entrant*)get_element_data(e->entrantlist.head, i);
+        printf("|%-21s|    %c     ||\n", 
+                entrant->name, entrant->course);
+    }
+    
+    printf("----------------------------------------------------------\n");
+}
+
 int main(int argc, char** argv) {
     int option, result;
     Event *e = malloc(sizeof(Event));
@@ -248,7 +264,8 @@ int main(int argc, char** argv) {
                 "3 - Check how many competitors are out on courses\n"
                 "4 - Check how many competitors have finished\n"
                 "5 - Manually update a competitor\n"
-                "6 - Read in a file of updates\n");
+                "6 - Read in a file of updates\n"
+                "7 - Print table of results\n");
         
         scanf("%d", &option);
         switch(option) {
@@ -272,6 +289,8 @@ int main(int argc, char** argv) {
                 break;
             case 6:
                 read_updates(e);
+            case 7:
+                print_results(e);
                 break;
         }
     } while (option != 0);

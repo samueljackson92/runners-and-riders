@@ -138,11 +138,12 @@ void read_tracks(FILE *file, Event *e) {
 }
 
 void read_entrants(FILE *file, Event *e) {
-    int status;
+    int status, count=0;
     Entrant *entrant;
     List_Node *new;
     
     do {
+        count++;
         entrant = malloc(sizeof(Entrant));
         new = malloc(sizeof(List_Node));
         status = fscanf(file, " %d %c %[a-zA-Z ]s", &entrant->number,
@@ -151,10 +152,10 @@ void read_entrants(FILE *file, Event *e) {
         entrant->state.type = NOT_STARTED;
         new->data = entrant;
         new->next = NULL;
-        
-        add_element(&e->entrantlist, new);
-        
+        add_element(&e->entrantlist, new); 
     } while(status != EOF);
+    
+    e->no_of_entrants = count;
 }
 
 void read_checkpoint_data(FILE * file, Event *e) {

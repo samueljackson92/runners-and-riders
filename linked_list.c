@@ -24,11 +24,7 @@ List_Node * get_element(List_Node *list, int number){
     return current;
 }
 
-void traverse_list(List_Node *current, void (*process_node) (List_Node *node)) {
-    if(current != NULL) {
-        process_node(current);
-        if(current->next != NULL){
-            traverse_list(current->next, process_node);
-        }
-    }
+void * get_element_data(List_Node *list, int number) {
+    List_Node *found = get_element(list, number);
+    return found->data;
 }
