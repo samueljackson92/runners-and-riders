@@ -204,6 +204,14 @@ void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type,
             }
             
             break;
+        case 'I':
+            break;
+        case 'A':
+            break;
+        case 'D':
+            break;
+        case 'E':
+            break;
     }
  
     entrant->cp_data = cp;
