@@ -155,21 +155,3 @@ void read_entrants(FILE *file, Event *e) {
     
     e->no_of_entrants = count;
 }
-
-void read_checkpoint_data(FILE * file, Event *e) {
-    int status;
-    Linked_List cp_data_list;
-    List_Node *node;
-    CP_Data *data;
-    do {
-        data = malloc(sizeof(CP_Data));
-        node = malloc(sizeof(Node));
-        status = fscanf(file, " %c %d %d %5[0-9:]s", &data->type,
-                &data->node, &data->competitor, data->time);
-        
-        node->data = data;
-        add_element(&cp_data_list, node);
-    } while(status != EOF);
-    
-    e->cp_data_buff = cp_data_list;
-}
