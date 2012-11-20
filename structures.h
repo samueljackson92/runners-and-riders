@@ -64,6 +64,7 @@ typedef struct checkpoint_data {
 typedef struct status {
     enum type_status type;
     CP_Data * cp_data;
+    int nodes_visited;
     int location_ref; /*i.e. track number, node number etc.*/
 } Status;
 

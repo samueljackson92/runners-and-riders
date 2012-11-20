@@ -103,7 +103,6 @@ void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type,
     List_Node *current = e->courselist.head;
     Course *c;
     
-    
     while(current->next != NULL) {
         c = (Course *) current->data;
         if (c->name == entrant->course) {
@@ -124,15 +123,21 @@ void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type,
                 strcpy(entrant->start_time, cp.time);
             }
             entrant->state.type = TIME_CHECKPOINT;
-            entrant->state.location_ref = cp.node;
+            
+            while(c->nodes[entrant->state.nodes_visited] != cp.node) {
+                entrant->state.nodes_visited++;
+            }
+            
+            entrant->state.location_ref = cp.node; 
+            
+            if(entrant->state.nodes_visited == c->path_size-1) {
+                entrant->state.type = COMPLETED;
+                strcpy(entrant->end_time, cp.time);
+            }
+            
             break;
     }
  
-    if(c->nodes[c->path_size-1] == checkpoint_num) {
-        entrant->state.type = COMPLETED;
-        strcpy(entrant->end_time, cp.time);
-    }
-    
     entrant->cp_data = cp;
 }
 
@@ -234,17 +239,16 @@ struct time_struct {
 struct time_struct calc_total_time (char start[TIME_STRING_SIZE], char end[TIME_STRING_SIZE]) {
     int start_hours, start_mins, end_hours, end_mins;
     struct time_struct total;
-    char output[TIME_STRING_SIZE];
-    start_hours  = (atoi(&start[0])*10) + atoi(&start[1]);
-    start_mins = (atoi(&start[3]) *10) + atoi(&start[4]);
+
+    start_hours  = atoi(start);
+    start_mins = atoi(&start[3]);
     
-    end_hours  = (atoi(&end[0])*10) + atoi(&end[1]);
-    end_mins = (atoi(&end[3]) *10) + atoi(&end[4]);
-    
+    end_hours  = atoi(end);
+    end_mins = atoi(&end[3]);
+
     total.hours = end_hours - start_hours;
     total.mins = end_mins - start_mins;
-    
-    
+   
     return total;
     
 }
@@ -254,22 +258,27 @@ void print_results(Event *e){
     struct time_struct total_time;
     Entrant *entrant;
 
-    printf("-----------------------------------------------------------------------------\n");
-    printf("|Competitor           |  Course  |  Start Time |   End Time  |     Total    |\n");
-    printf("|---------------------------------------------------------------------------|\n");
+    printf("-------------------------------------------------------------------------------\n");
+    printf("|Competitor           |  Course  |  Start Time |   End Time  |     Total      |\n");
+    printf("|-----------------------------------------------------------------------------|\n");
     
     for (i=0; i< e->no_of_entrants-1; i++) {
+        total_time.hours = 0;
+        total_time.mins = 0;
+    
         entrant = (Entrant*)get_element_data(e->entrantlist.head, i);
         
-        total_time = calc_total_time(entrant->start_time, entrant->end_time);
+        if(entrant->state.type == COMPLETED) {
+                total_time = calc_total_time(entrant->start_time, entrant->end_time);
+        }
         
-        printf("|%-21s|    %c     |    %s    |    %s    |  %dhrs %dmins  |\n", 
+        printf("|%-21s|    %c     |    %s    |    %s    |  %.2dhrs %.2dmins  |\n", 
                 entrant->name, entrant->course, 
                 entrant->start_time, entrant->end_time, 
                 total_time.hours, total_time.mins);
     }
     
-    printf("-----------------------------------------------------------------------------\n");
+    printf("-------------------------------------------------------------------------------\n");
 }
 
 int main(int argc, char** argv) {
