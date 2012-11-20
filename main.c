@@ -186,6 +186,7 @@ void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type,
     cp.type = type;
     
     switch(type) {
+        /*regular time update*/
         case 'T':
             if(entrant->state.type == NOT_STARTED){
                 strcpy(entrant->start_time, cp.time);
@@ -204,12 +205,16 @@ void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type,
             }
             
             break;
+        /* Excluded at checkpoint for taking wrong direction */
         case 'I':
             break;
+        /* Arrived at medical checkpoint */
         case 'A':
             break;
+        /* Departed from medical checkpoint */
         case 'D':
             break;
+        /* Excluded for failing medical checkpoint */
         case 'E':
             break;
     }

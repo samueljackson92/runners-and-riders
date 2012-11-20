@@ -40,7 +40,7 @@ void read_file_data(Event *e){
 void read_file(char name[MAX_FILENAME_LENGTH], void (*read_file_func) (FILE *, Event *), Event *e){
     FILE *file;
     char filepath[FILE_PATH_SIZE];
-    strcpy(filepath, "res/");
+    strcpy(filepath, "res2/");
     strcat(filepath, name);
     
     file = fopen(filepath, "r");
