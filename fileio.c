@@ -150,6 +150,8 @@ void read_entrants(FILE *file, Event *e) {
                 &entrant->course, entrant->name);
         
         entrant->state.type = NOT_STARTED;
+        strcpy(entrant->start_time, "00:00");
+        strcpy(entrant->end_time, "00:00");
         new->data = entrant;
         new->next = NULL;
         add_element(&e->entrantlist, new); 

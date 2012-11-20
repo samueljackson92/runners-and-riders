@@ -74,6 +74,8 @@ typedef struct entrant {
     char name[MAX_ENTRANT_NAME_SIZE];
     Status state;
     CP_Data cp_data;
+    char start_time[TIME_STRING_SIZE];
+    char end_time[TIME_STRING_SIZE];
 } Entrant;
 
 /*structure to hold details about a single event*/
