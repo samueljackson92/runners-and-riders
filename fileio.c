@@ -109,11 +109,7 @@ void read_courses (FILE *file, Event *e) {
             
             course->name = name;
             course->path_size = path_size;
-            
-            printf("%d\n", course->path_size);
-            for (i=0; i<course->path_size; i++){
-                printf("%d\n", course->nodes[i]);
-            }
+
             node->data = course;
             add_element(&e->courselist, node);
         }

@@ -14,6 +14,74 @@
 #include "fileio.h"
 
 
+int main(int argc, char** argv) {
+    int option, result;
+    Event *e = malloc(sizeof(Event));
+    
+    e->courselist.head = NULL;
+    e->courselist.tail = NULL;
+    e->entrantlist.head = NULL;
+    e->entrantlist.tail = NULL;
+    e->nodelist.head = NULL;
+    e->nodelist.tail = NULL;
+    e->tracklist.head = NULL;
+    e->tracklist.tail = NULL;
+    
+    read_file_data(e);
+    
+    puts("Event data loaded!");
+    
+    do {
+        printf("Enter an Option:\n"
+                "0 - Exit\n"
+                "1 - Query Competitor\n"
+                "2 - Check how many competitors not yet started\n"
+                "3 - Check how many competitors are out on courses\n"
+                "4 - Check how many competitors have finished\n"
+                "5 - Manually update a competitor\n"
+                "6 - Read in a file of updates\n"
+                "7 - Print table of results\n");
+        
+        scanf("%d", &option);
+        clearScreen();
+        switch(option) {
+            case 1:
+                queryCompetitor(e);
+                break;
+            case 2:
+                result = check_num_competitors(&e->entrantlist, NOT_STARTED);
+                printf("%d competitors have not yet started\n", result);
+                break;
+            case 3:
+                result = check_num_competitors(&e->entrantlist, ON_TRACK);
+                printf("%d competitors are out on a course\n", result);
+                break;
+            case 4:
+                result = check_num_competitors(&e->entrantlist, COMPLETED);
+                printf("%d competitors have completed their course\n", result);
+                break;
+            case 5:
+                manually_read_data(e);
+                break;
+            case 6:
+                read_updates(e);
+                break;
+            case 7:
+                print_results(e);
+                break;
+        }
+    } while (option != 0);
+    
+    free(e);
+    return (EXIT_SUCCESS);
+}
+
+void clearScreen() {
+    if(system("clear")) {
+        system("cls");
+    }
+}
+
 char * convert_type_status(enum type_status type, char * output) {
     switch(type) {
         case NOT_STARTED:
@@ -232,30 +300,19 @@ void read_updates(Event *e) {
     update_others(e, cp_data.competitor);
 }
 
-struct time_struct {
-    int hours;
-    int mins;
-};
-struct time_struct calc_total_time (char start[TIME_STRING_SIZE], char end[TIME_STRING_SIZE]) {
-    int start_hours, start_mins, end_hours, end_mins;
-    struct time_struct total;
+int calc_total_time (char *start, char *end) {
+    int start_t, end_t, total;
 
-    start_hours  = atoi(start);
-    start_mins = atoi(&start[3]);
-    
-    end_hours  = atoi(end);
-    end_mins = atoi(&end[3]);
-
-    total.hours = end_hours - start_hours;
-    total.mins = end_mins - start_mins;
+    start_t  = atoi(start);
+    end_t  = atoi(end);
    
-    return total;
+    total = end_t - start_t;
     
+    return total;  
 }
 
 void print_results(Event *e){
-    int i;
-    struct time_struct total_time;
+    int i, total_hours, total_mins;
     Entrant *entrant;
 
     printf("-------------------------------------------------------------------------------\n");
@@ -263,81 +320,21 @@ void print_results(Event *e){
     printf("|-----------------------------------------------------------------------------|\n");
     
     for (i=0; i< e->no_of_entrants-1; i++) {
-        total_time.hours = 0;
-        total_time.mins = 0;
+        total_hours = 0;
+        total_mins = 0;
     
         entrant = (Entrant*)get_element_data(e->entrantlist.head, i);
         
         if(entrant->state.type == COMPLETED) {
-                total_time = calc_total_time(entrant->start_time, entrant->end_time);
+                total_hours = calc_total_time(entrant->start_time, entrant->end_time);
+                total_mins = calc_total_time(&entrant->start_time[3], &entrant->start_time[3]);
         }
         
         printf("|%-21s|    %c     |    %s    |    %s    |  %.2dhrs %.2dmins  |\n", 
                 entrant->name, entrant->course, 
                 entrant->start_time, entrant->end_time, 
-                total_time.hours, total_time.mins);
+                total_hours, total_mins);
     }
     
     printf("-------------------------------------------------------------------------------\n");
-}
-
-int main(int argc, char** argv) {
-    int option, result;
-    Event *e = malloc(sizeof(Event));
-    
-    e->courselist.head = NULL;
-    e->courselist.tail = NULL;
-    e->entrantlist.head = NULL;
-    e->entrantlist.tail = NULL;
-    e->nodelist.head = NULL;
-    e->nodelist.tail = NULL;
-    e->tracklist.head = NULL;
-    e->tracklist.tail = NULL;
-    
-    read_file_data(e);
-    
-    puts("Event data loaded!");
-    
-    do {
-        printf("Enter an Option:\n"
-                "0 - Exit\n"
-                "1 - Query Competitor\n"
-                "2 - Check how many competitors not yet started\n"
-                "3 - Check how many competitors are out on courses\n"
-                "4 - Check how many competitors have finished\n"
-                "5 - Manually update a competitor\n"
-                "6 - Read in a file of updates\n"
-                "7 - Print table of results\n");
-        
-        scanf("%d", &option);
-        switch(option) {
-            case 1:
-                queryCompetitor(e);
-                break;
-            case 2:
-                result = check_num_competitors(&e->entrantlist, NOT_STARTED);
-                printf("%d competitors have not yet started\n", result);
-                break;
-            case 3:
-                result = check_num_competitors(&e->entrantlist, ON_TRACK);
-                printf("%d competitors are out on a course\n", result);
-                break;
-            case 4:
-                result = check_num_competitors(&e->entrantlist, COMPLETED);
-                printf("%d competitors have completed their course\n", result);
-                break;
-            case 5:
-                manually_read_data(e);
-                break;
-            case 6:
-                read_updates(e);
-                break;
-            case 7:
-                print_results(e);
-                break;
-        }
-    } while (option != 0);
-    
-    free(e);
-    return (EXIT_SUCCESS);
 }
