@@ -40,7 +40,9 @@ int main(int argc, char** argv) {
                 "4 - Check how many competitors have finished\n"
                 "5 - Manually update a competitor\n"
                 "6 - Read in a file of updates\n"
-                "7 - Print table of results\n");
+                "7 - Print table of results\n"
+                "8 - Print entrants excluded at medical checkpoints\n"
+                "9 - Print entrants excluded at regular checkpoints\n");
         
         scanf("%d", &option);
         clearScreen();
@@ -69,6 +71,12 @@ int main(int argc, char** argv) {
             case 7:
                 print_results(e);
                 break;
+            case 8:
+                print_entrants_excluded(e, EXCLUDED_MC);
+                break;
+            case 9:
+                print_entrants_excluded(e, EXCLUDED_IR);
+                break;
         }
     } while (option != 0);
     
@@ -82,7 +90,8 @@ void clearScreen() {
     }
 }
 
-char * convert_type_status(enum type_status type, char * output) {
+char * convert_type_status(enum type_status type) {
+    char output[50];
     switch(type) {
         case NOT_STARTED:
             strcpy(output, "Not yet started.");
@@ -110,7 +119,6 @@ char * convert_type_status(enum type_status type, char * output) {
 }
 
 void queryCompetitor(Event *e) {
-    char output[35];
     int id;
     List_Node *competitor;
     List_Node *node = e->tracklist.head;
@@ -127,7 +135,7 @@ void queryCompetitor(Event *e) {
     
     printf("COMPETITOR %d:\n", id+1);
     printf("Name: %s\n", entrant->name);
-    printf("Status: %s\n", convert_type_status(entrant->state.type, output));
+    printf("Status: %s\n", convert_type_status(entrant->state.type));
     
     if (entrant->state.type == ON_TRACK) {
         while (node->next != NULL){
@@ -137,6 +145,7 @@ void queryCompetitor(Event *e) {
             }
             node = node->next;
         }
+        printf("Last recorded time: %s\n", entrant->cp_data.time);
         printf("Location Reference: %d\n", entrant->state.location_ref);
         printf("Currently on track between node %d and node %d\n", t->nodea, t->nodeb);
     } else {
@@ -171,6 +180,8 @@ void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type,
     List_Node *current = e->courselist.head;
     Course *c;
     
+    int hours, mins;
+    
     while(current->next != NULL) {
         c = (Course *) current->data;
         if (c->name == entrant->course) {
@@ -191,6 +202,7 @@ void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type,
             if(entrant->state.type == NOT_STARTED){
                 strcpy(entrant->start_time, cp.time);
             }
+            
             entrant->state.type = TIME_CHECKPOINT;
             
             while(c->nodes[entrant->state.nodes_visited] != cp.node) {
@@ -207,15 +219,34 @@ void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type,
             break;
         /* Excluded at checkpoint for taking wrong direction */
         case 'I':
+            entrant->state.type = EXCLUDED_IR;
+            entrant->state.location_ref = cp.node;
             break;
         /* Arrived at medical checkpoint */
         case 'A':
+            entrant->state.type = MC_CHECKPOINT;
+            
+            while(c->nodes[entrant->state.nodes_visited] != cp.node) {
+                entrant->state.nodes_visited++;
+            }
+            
+            entrant->state.location_ref = cp.node;
+            strcpy(entrant->mc_time_stopped, cp.time);
             break;
         /* Departed from medical checkpoint */
         case 'D':
+            hours = calc_time_diff(entrant->mc_time_stopped, cp.time);
+            mins = calc_time_diff(&entrant->mc_time_stopped[3], &cp.time[3]);
+            
+            entrant->mc_time_delay_hours += hours;
+            entrant->mc_time_delay_mins += mins;
+            
+            entrant->state.type = ON_TRACK;
             break;
         /* Excluded for failing medical checkpoint */
         case 'E':
+            entrant->state.type = EXCLUDED_MC;
+            entrant->state.location_ref = cp.node;
             break;
     }
  
@@ -261,11 +292,16 @@ void update_others(Event *evt, int latest){
         current_track = evt->tracklist.head;
         
         if(e->state.type != COMPLETED && e->state.type != NOT_STARTED 
-                && latest != e->number) {
+                && e->state.type != MC_CHECKPOINT && e->state.type != EXCLUDED_IR &&
+                e->state.type != EXCLUDED_MC &&
+                (latest != e->number || e->state.type == ON_TRACK)) {
             
             /* get current course*/
-            while(e->course != c->name && current_course->next != NULL){
+            while(current_course->next != NULL){
                 c = (Course*) current_course->data;
+                if (e->course != c->name) {
+                    break;
+                }
                 current_course = current_course->next;
             }
 
@@ -313,7 +349,7 @@ void read_updates(Event *e) {
     update_others(e, cp_data.competitor);
 }
 
-int calc_total_time (char *start, char *end) {
+int calc_time_diff (char *start, char *end) {
     int start_t, end_t, total;
 
     start_t  = atoi(start);
@@ -339,8 +375,11 @@ void print_results(Event *e){
         entrant = (Entrant*)get_element_data(e->entrantlist.head, i);
         
         if(entrant->state.type == COMPLETED) {
-                total_hours = calc_total_time(entrant->start_time, entrant->end_time);
-                total_mins = calc_total_time(&entrant->start_time[3], &entrant->start_time[3]);
+                total_hours = calc_time_diff(entrant->start_time, entrant->end_time);
+                total_mins = calc_time_diff(&entrant->start_time[3], &entrant->start_time[3]);
+                
+                total_hours -= entrant->mc_time_delay_hours;
+                total_mins -= entrant->mc_time_delay_mins;
         }
         
         printf("|%-21s|    %c     |    %s    |    %s    |  %.2dhrs %.2dmins  |\n", 
@@ -351,3 +390,30 @@ void print_results(Event *e){
     
     printf("-------------------------------------------------------------------------------\n");
 }
+
+void print_entrants_excluded(Event *e, enum type_status type) {
+    Entrant * entrant;
+    int i =0;
+    
+    if(type == EXCLUDED_MC) {
+        printf("Competitors Excluded from Medical Checkpoints\n");
+    } else {
+        printf("Competitors Excluded from Regular Checkpoints\n");
+    }
+    
+    printf("------------------------------------------\n");
+    printf("|Competitor           |  Node  |  Time   |\n");
+    printf("|----------------------------------------|\n");
+    
+    for (i=0; i<e->no_of_entrants; i++) {
+        entrant = get_element_data(e->entrantlist.head, i);
+        if(entrant->state.type == type){
+                printf("|%-21s|   %.2d   |  %s  |\n", 
+                        entrant->name, entrant->state.location_ref, entrant->cp_data.time);
+        }
+    }
+    
+    printf("------------------------------------------\n");
+}
+
+

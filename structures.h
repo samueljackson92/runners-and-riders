@@ -75,6 +75,8 @@ typedef struct entrant {
     char name[MAX_ENTRANT_NAME_SIZE];
     char start_time[TIME_STRING_SIZE];
     char end_time[TIME_STRING_SIZE];
+    char mc_time_stopped[TIME_STRING_SIZE];
+    int mc_time_delay_hours, mc_time_delay_mins;
     Status state;
     CP_Data cp_data;
 } Entrant;

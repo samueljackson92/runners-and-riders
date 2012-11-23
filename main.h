@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-char * convert_type_status(enum type_status type, char * output);
+char * convert_type_status(enum type_status type);
 void queryCompetitor(Event *e);
 int check_num_competitors(Linked_List *el, enum type_status type);
 void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type, 
@@ -20,8 +20,9 @@ void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type,
 void manually_read_data(Event *e);
 void update_others(Event *evt, int latest);
 void read_updates(Event *e);
-int calc_total_time (char *start, char *end);
+int calc_time_diff (char *start, char *end);
 void print_results(Event *e);
+void print_entrants_excluded(Event *e, enum type_status type);
 void clearScreen();
 
 #ifdef	__cplusplus
