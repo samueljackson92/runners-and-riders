@@ -41,6 +41,7 @@ typedef struct course {
     char name;
     int path_size;
     int *nodes;
+    Linked_List tracks;
 } Course;
 
 enum type_status {
@@ -79,6 +80,7 @@ typedef struct entrant {
     int mc_time_delay_hours, mc_time_delay_mins;
     Status state;
     CP_Data cp_data;
+    List_Node *current_track;
 } Entrant;
 
 /*structure to hold details about a single event*/

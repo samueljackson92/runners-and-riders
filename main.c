@@ -16,16 +16,8 @@
 
 int main(int argc, char** argv) {
     int option, result;
-    Event *e = malloc(sizeof(Event));
     
-    e->courselist.head = NULL;
-    e->courselist.tail = NULL;
-    e->entrantlist.head = NULL;
-    e->entrantlist.tail = NULL;
-    e->nodelist.head = NULL;
-    e->nodelist.tail = NULL;
-    e->tracklist.head = NULL;
-    e->tracklist.tail = NULL;
+    Event *e = malloc(sizeof(Event));
     
     read_file_data(e);
     
@@ -170,12 +162,10 @@ int check_num_competitors(Linked_List *el, enum type_status type) {
     return count;
 }
 
-void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type, 
-                                int entrant_num, int checkpoint_num){
+void add_new_time(Event *e, CP_Data data){
     
-    List_Node *competitor = get_element(e->entrantlist.head, entrant_num);
+    List_Node *competitor = get_element(e->entrantlist.head, data.competitor);
     Entrant *entrant = (Entrant*) competitor->data;
-    CP_Data cp;
        
     List_Node *current = e->courselist.head;
     Course *c;
@@ -190,53 +180,47 @@ void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type,
         current = current->next;
     }
     
-    
-    cp.competitor = entrant_num;
-    cp.node = checkpoint_num;
-    strcpy(cp.time, time);
-    cp.type = type;
-    
-    switch(type) {
+    switch(data.type) {
         /*regular time update*/
         case 'T':
             if(entrant->state.type == NOT_STARTED){
-                strcpy(entrant->start_time, cp.time);
+                strcpy(entrant->start_time, data.time);
             }
             
             entrant->state.type = TIME_CHECKPOINT;
             
-            while(c->nodes[entrant->state.nodes_visited] != cp.node) {
+            while(c->nodes[entrant->state.nodes_visited] != data.node) {
                 entrant->state.nodes_visited++;
             }
             
-            entrant->state.location_ref = cp.node; 
+            entrant->state.location_ref = data.node; 
             
             if(entrant->state.nodes_visited == c->path_size-1) {
                 entrant->state.type = COMPLETED;
-                strcpy(entrant->end_time, cp.time);
+                strcpy(entrant->end_time, data.time);
             }
             
             break;
         /* Excluded at checkpoint for taking wrong direction */
         case 'I':
             entrant->state.type = EXCLUDED_IR;
-            entrant->state.location_ref = cp.node;
+            entrant->state.location_ref = data.node;
             break;
         /* Arrived at medical checkpoint */
         case 'A':
             entrant->state.type = MC_CHECKPOINT;
             
-            while(c->nodes[entrant->state.nodes_visited] != cp.node) {
+            while(c->nodes[entrant->state.nodes_visited] != data.node) {
                 entrant->state.nodes_visited++;
             }
             
-            entrant->state.location_ref = cp.node;
-            strcpy(entrant->mc_time_stopped, cp.time);
+            entrant->state.location_ref = data.node;
+            strcpy(entrant->mc_time_stopped, data.time);
             break;
         /* Departed from medical checkpoint */
         case 'D':
-            hours = calc_time_diff(entrant->mc_time_stopped, cp.time);
-            mins = calc_time_diff(&entrant->mc_time_stopped[3], &cp.time[3]);
+            hours = calc_time_diff(entrant->mc_time_stopped, data.time);
+            mins = calc_time_diff(&entrant->mc_time_stopped[3], &data.time[3]);
             
             entrant->mc_time_delay_hours += hours;
             entrant->mc_time_delay_mins += mins;
@@ -246,107 +230,77 @@ void add_new_time(Event *e, char time[TIME_STRING_SIZE], char type,
         /* Excluded for failing medical checkpoint */
         case 'E':
             entrant->state.type = EXCLUDED_MC;
-            entrant->state.location_ref = cp.node;
+            entrant->state.location_ref = data.node;
             break;
     }
  
-    entrant->cp_data = cp;
+    entrant->cp_data = data;
 }
 
 void manually_read_data(Event *e) {
-    char cp_type;
-    int comp_num, cp_num;
-    char time[TIME_STRING_SIZE];
+    CP_Data data;
     
     printf("Enter the type of check point (T/I/A/D/E):\n");
-    scanf(" %[TIADE]c", &cp_type);
+    scanf(" %[TIADE]c", &data.type);
     
     printf("Enter the competitor number:\n");
-    scanf(" %d", &comp_num);
+    scanf(" %d", &data.competitor);
     
     printf("Enter the check point number:\n");
-    scanf(" %d", &cp_num);
+    scanf(" %d", &data.node);
     
     printf("Enter the time recorded:\n");
-    scanf(" %[0-9:]s", time);
-    
-    add_new_time(e, time, cp_type, comp_num-1, cp_num);
-    update_others(e, comp_num);
+    scanf(" %[0-9:]s", data.time);
+
+    add_new_time(e, data);
+    update_others(e, data);
 }
 
-void update_others(Event *evt, int latest){
+int convert_time_to_mins(char time[TIME_STRING_SIZE]) {
+    int hours, mins;
+    
+    hours = atoi(time);
+    mins = atoi(&time[3]);
+    
+    return (hours*60) + mins;
+}
+
+void update_others(Event *evt, CP_Data data){
     List_Node *current_entrant = evt->entrantlist.head;
-    List_Node *current_course;
-    List_Node *current_track;
+    Track *track;
     Entrant *e;
-    Course *c;
-    Track *t;
-    
-    int i=0, node_a, node_b, found=0;
-    
+    enum type_status status;
+    int check_time, current_time, track_total;
     
     while(current_entrant->next != NULL) {
         e = (Entrant *) current_entrant->data;
+        status = e->state.type;
         
-        current_course = evt->courselist.head;
-        current_track = evt->tracklist.head;
-        
-        if(e->state.type != COMPLETED && e->state.type != NOT_STARTED 
-                && e->state.type != MC_CHECKPOINT && e->state.type != EXCLUDED_IR &&
-                e->state.type != EXCLUDED_MC &&
-                (latest != e->number || e->state.type == ON_TRACK)) {
-            
-            /* get current course*/
-            while(current_course->next != NULL){
-                c = (Course*) current_course->data;
-                if (e->course != c->name) {
-                    break;
+        /*set others to be on track and update there position*/
+        if((status == TIME_CHECKPOINT && data.competitor != e->number) || status == ON_TRACK) {
+            if(status == TIME_CHECKPOINT) {
+                /*move onto the next track*/
+                e->current_track = e->current_track->next;
+                e->state.type = ON_TRACK;
+            } else {
+                /*entrant already on the track*/
+                track  = (Track *) e->current_track->data;
+                
+                check_time = convert_time_to_mins(e->cp_data.time); /*time at last checkpoint*/
+                current_time = convert_time_to_mins(data.time);     /*current time*/
+                track_total = track->time;                          /*time it should take on track*/
+                
+                /*fast forward the entrant along the course*/
+                while(track_total < current_time - check_time) {
+                    e->current_track = e->current_track->next;
+                    track = (Track*) e->current_track->data;
+                    track_total += track->time;
                 }
-                current_course = current_course->next;
-            }
-
-            /*get current track numbers*/
-            for (i=0; i< c->path_size; i++) {
-                if (e->state.location_ref == c->nodes[i]) {
-                    node_a = c->nodes[i];
-                    node_b = c->nodes[i+1];
-                    break;
-                }
-            }
-            
-            /*find the track id and set their location to it*/
-            found = 0;
-            while(!found && current_track->next != NULL) {
-                t = (Track*) current_track->data;
-                if ((node_a == t->nodea && node_b == t->nodeb)
-                        || (node_a == t->nodeb && node_b == t->nodea)) {
-                    e->state.location_ref = t->number;
-                    e->state.type = ON_TRACK;
-                    found = 1;
-                }
-                current_track = current_track->next;
             }
         }
         
         current_entrant = current_entrant->next;
     }
-}
-
-void read_updates(Event *e) {
-    char filename[MAX_FILENAME_LENGTH];
-    CP_Data cp_data;
-    
-    printf("Enter name of the checkpoint files:\n");
-    scanf(" %s", filename);
-    
-    FILE *file = fopen(filename, "r");
-    
-    while (!feof(file)){
-        fscanf(file, "%c %d %d %5[0-9:]s", &cp_data.type, &cp_data.node, 
-                &cp_data.competitor, cp_data.time);
-        add_new_time(e, cp_data.time, cp_data.type, cp_data.competitor-1, cp_data.node);
-    }
-    update_others(e, cp_data.competitor);
 }
 
 int calc_time_diff (char *start, char *end) {
@@ -360,41 +314,46 @@ int calc_time_diff (char *start, char *end) {
     return total;  
 }
 
-void print_results(Event *e){
-    int i, total_hours, total_mins;
-    Entrant *entrant;
+void print_entrant(void *data) {
+    Entrant *entrant = (Entrant*) data;
+    int total_hours = 0;
+    int total_mins = 0;
+        
+    if(entrant->state.type == COMPLETED) {
+            total_hours = calc_time_diff(entrant->start_time, entrant->end_time);
+            total_mins = calc_time_diff(&entrant->start_time[3], &entrant->start_time[3]);
 
+            total_hours -= entrant->mc_time_delay_hours;
+            total_mins -= entrant->mc_time_delay_mins;
+    }
+
+    printf("|%-21s|    %c     |    %s    |    %s    |  %.2dhrs %.2dmins  |\n", 
+            entrant->name, entrant->course, 
+            entrant->start_time, entrant->end_time, 
+            total_hours, total_mins);
+}
+
+void print_results(Event *e){
     printf("-------------------------------------------------------------------------------\n");
     printf("|Competitor           |  Course  |  Start Time |   End Time  |     Total      |\n");
     printf("|-----------------------------------------------------------------------------|\n");
     
-    for (i=0; i< e->no_of_entrants-1; i++) {
-        total_hours = 0;
-        total_mins = 0;
-    
-        entrant = (Entrant*)get_element_data(e->entrantlist.head, i);
-        
-        if(entrant->state.type == COMPLETED) {
-                total_hours = calc_time_diff(entrant->start_time, entrant->end_time);
-                total_mins = calc_time_diff(&entrant->start_time[3], &entrant->start_time[3]);
-                
-                total_hours -= entrant->mc_time_delay_hours;
-                total_mins -= entrant->mc_time_delay_mins;
-        }
-        
-        printf("|%-21s|    %c     |    %s    |    %s    |  %.2dhrs %.2dmins  |\n", 
-                entrant->name, entrant->course, 
-                entrant->start_time, entrant->end_time, 
-                total_hours, total_mins);
-    }
+    traverse_list(e->entrantlist.head, &print_entrant);
     
     printf("-------------------------------------------------------------------------------\n");
 }
 
-void print_entrants_excluded(Event *e, enum type_status type) {
-    Entrant * entrant;
-    int i =0;
+void print_excluded_entrant(void *data, void *condition) {
+    Entrant *entrant = (Entrant*) data;
+    enum type_status *type = (enum type_status*) condition;
     
+    if(entrant->state.type == *type) {
+        printf("|%-21s|   %.2d   |  %s  |\n", entrant->name, 
+                entrant->state.location_ref, entrant->cp_data.time);
+    }
+}
+
+void print_entrants_excluded(Event *e, enum type_status type) {    
     if(type == EXCLUDED_MC) {
         printf("Competitors Excluded from Medical Checkpoints\n");
     } else {
@@ -405,15 +364,7 @@ void print_entrants_excluded(Event *e, enum type_status type) {
     printf("|Competitor           |  Node  |  Time   |\n");
     printf("|----------------------------------------|\n");
     
-    for (i=0; i<e->no_of_entrants; i++) {
-        entrant = get_element_data(e->entrantlist.head, i);
-        if(entrant->state.type == type){
-                printf("|%-21s|   %.2d   |  %s  |\n", 
-                        entrant->name, entrant->state.location_ref, entrant->cp_data.time);
-        }
-    }
+    traverse_list_conditional(e->entrantlist.head, &print_excluded_entrant, &type);
     
     printf("------------------------------------------\n");
 }
-
-
