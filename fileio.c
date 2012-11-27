@@ -177,23 +177,26 @@ void read_entrants(FILE *file, Event *e) {
     Entrant *entrant;
     List_Node *new;
     Course *course;
+    int status;
     
     while (!feof(file)) {
         entrant = malloc(sizeof(Entrant));
         new = malloc(sizeof(List_Node));
-        fscanf(file, " %d %c %[a-zA-Z ]s", &entrant->number,
+        status = fscanf(file, " %d %c %[a-zA-Z ]s", &entrant->number,
                 &entrant->course, entrant->name);
         
-        entrant->state.type = NOT_STARTED;
-        strcpy(entrant->start_time, "00:00");
-        strcpy(entrant->end_time, "00:00");
-        
-        course = findCourse(&e->courselist, entrant->course);
-        entrant->current_track = course->tracks.head;
-        
-        new->data = entrant;
-        new->next = NULL;
-        add_element(&e->entrantlist, new);
+        if(status != EOF) {
+            entrant->state.type = NOT_STARTED;
+            strcpy(entrant->start_time, "00:00");
+            strcpy(entrant->end_time, "00:00");
+
+            course = findCourse(&e->courselist, entrant->course);
+            entrant->current_track = course->tracks.head;
+
+            new->data = entrant;
+            new->next = NULL;
+            add_element(&e->entrantlist, new);
+        }
     } 
 }
 

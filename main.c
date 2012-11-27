@@ -164,7 +164,7 @@ int check_num_competitors(Linked_List *el, enum type_status type) {
 
 void add_new_time(Event *e, CP_Data data){
     
-    List_Node *competitor = get_element(e->entrantlist.head, data.competitor);
+    List_Node *competitor = get_element(e->entrantlist.head, data.competitor-1);
     Entrant *entrant = (Entrant*) competitor->data;
        
     List_Node *current = e->courselist.head;
@@ -343,17 +343,10 @@ void print_results(Event *e){
     printf("-------------------------------------------------------------------------------\n");
 }
 
-void print_excluded_entrant(void *data, void *condition) {
-    Entrant *entrant = (Entrant*) data;
-    enum type_status *type = (enum type_status*) condition;
-    
-    if(entrant->state.type == *type) {
-        printf("|%-21s|   %.2d   |  %s  |\n", entrant->name, 
-                entrant->state.location_ref, entrant->cp_data.time);
-    }
-}
-
 void print_entrants_excluded(Event *e, enum type_status type) {    
+    List_Node *current = e->entrantlist.head;
+    Entrant *entrant;
+    
     if(type == EXCLUDED_MC) {
         printf("Competitors Excluded from Medical Checkpoints\n");
     } else {
@@ -364,7 +357,14 @@ void print_entrants_excluded(Event *e, enum type_status type) {
     printf("|Competitor           |  Node  |  Time   |\n");
     printf("|----------------------------------------|\n");
     
-    traverse_list_conditional(e->entrantlist.head, &print_excluded_entrant, &type);
+    while (current->next != NULL) {
+        entrant = (Entrant*) current->data;
+        if(entrant->state.type == type) {
+            printf("|%-21s|   %.2d   |  %s  |\n", entrant->name, 
+                entrant->state.location_ref, entrant->cp_data.time);
+        }
+        current = current->next;
+    }
     
     printf("------------------------------------------\n");
 }
