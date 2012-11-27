@@ -162,7 +162,7 @@ Course * findCourse(Linked_List *list, char c) {
     Course * current_course;
     int found = 0;
     
-    while (!found && current->next){
+    while (!found && current->next != NULL){
         current_course = (Course *) current->data;
         if(c == current_course->name){
             found = 1;
@@ -177,6 +177,7 @@ void read_entrants(FILE *file, Event *e) {
     Entrant *entrant;
     List_Node *new;
     Course *course;
+    Track *track;
     int status;
     
     while (!feof(file)) {

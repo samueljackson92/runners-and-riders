@@ -110,33 +110,38 @@ char * convert_type_status(enum type_status type) {
     return output;
 }
 
+Entrant * find_entrant(Linked_List list, int id) {
+    List_Node *current = list.head;
+    Entrant *entrant;
+    int found = 0;
+    
+    while(!found && current->next != NULL) {
+        entrant = (Entrant*) current->data;
+        if(entrant->number == id) {
+            found = 1;
+        }
+        current = current->next;
+    }
+    
+    return entrant;
+}
+
 void queryCompetitor(Event *e) {
     int id;
-    List_Node *competitor;
-    List_Node *node = e->tracklist.head;
     Track *t;
     Entrant *entrant;
     
     printf("Enter id for the competitor:\n");
     scanf("%d", &id);
     
-    id--; /*linked lists are zero based*/
+    entrant = find_entrant(e->entrantlist, id);
     
-    competitor = get_element(e->entrantlist.head, id);
-    entrant = (Entrant*) competitor->data;
-    
-    printf("COMPETITOR %d:\n", id+1);
+    printf("COMPETITOR %d:\n", id);
     printf("Name: %s\n", entrant->name);
     printf("Status: %s\n", convert_type_status(entrant->state.type));
     
     if (entrant->state.type == ON_TRACK) {
-        while (node->next != NULL){
-            t = (Track*) node->data;
-            if(t->number == entrant->state.location_ref) {
-                break;
-            }
-            node = node->next;
-        }
+        t = (Track *) entrant->current_track->data;
         printf("Last recorded time: %s\n", entrant->cp_data.time);
         printf("Location Reference: %d\n", entrant->state.location_ref);
         printf("Currently on track between node %d and node %d\n", t->nodea, t->nodeb);
@@ -160,12 +165,10 @@ int check_num_competitors(Linked_List *el, enum type_status type) {
     }
     
     return count;
-}
+} 
 
 void add_new_time(Event *e, CP_Data data){
-    
-    List_Node *competitor = get_element(e->entrantlist.head, data.competitor-1);
-    Entrant *entrant = (Entrant*) competitor->data;
+    Entrant *entrant = find_entrant(e->entrantlist, data.competitor);
        
     List_Node *current = e->courselist.head;
     Course *c;
@@ -278,11 +281,6 @@ void update_others(Event *evt, CP_Data data){
         
         /*set others to be on track and update there position*/
         if((status == TIME_CHECKPOINT && data.competitor != e->number) || status == ON_TRACK) {
-            if(status == TIME_CHECKPOINT) {
-                /*move onto the next track*/
-                e->current_track = e->current_track->next;
-                e->state.type = ON_TRACK;
-            } else {
                 /*entrant already on the track*/
                 track  = (Track *) e->current_track->data;
                 
@@ -296,9 +294,8 @@ void update_others(Event *evt, CP_Data data){
                     track = (Track*) e->current_track->data;
                     track_total += track->time;
                 }
-            }
+                e->state.type = ON_TRACK;
         }
-        
         current_entrant = current_entrant->next;
     }
 }
