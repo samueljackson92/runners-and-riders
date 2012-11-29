@@ -107,7 +107,7 @@ void query_competitor(Event *e) {
     }
 }
 
-int check_num_competitors(Linked_List *el, enum type_status type) {
+int check_num_competitors(Linked_List *el, enum entrant_status type) {
     int count = 0;
     List_Node *current = el->head;
     Entrant *entrant;
@@ -189,7 +189,7 @@ void print_results(Event *e){
     printf("-------------------------------------------------------------------------------\n");
 }
 
-void print_entrants_excluded(Event *e, enum type_status type) {    
+void print_entrants_excluded(Event *e, enum entrant_status type) {    
     List_Node *current = e->entrantlist.head;
     Entrant *entrant;
     

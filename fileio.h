@@ -14,13 +14,18 @@ extern "C" {
 
 #include <stdio.h>
 #include "structures.h"
-#define MAX_FILENAME_LENGTH 101
+    
+/*
+ * macro for the maximum filepath length
+ * set to 101 so as to leave room for the /0
+ */
+#define MAX_FILEPATH_LENGTH 101
 
 /*read in the name of each of the data files from the user.*/
 void read_file_data(Event *e);
 
 /*open a file for reading with the given name and a function to read the contents.*/
-void read_file(char name[MAX_FILENAME_LENGTH], void (*read_file_func) (FILE *file, Event *e), Event *e);
+void read_file(char name[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE *file, Event *e), Event *e);
 
 /*function to read event details from a file.*/
 void read_event_details(FILE *file, Event *e);

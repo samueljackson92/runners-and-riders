@@ -86,7 +86,7 @@ void update_others(Event *evt, CP_Data data){
     List_Node *current_entrant = evt->entrantlist.head;
     Track *track;
     Entrant *entrant;
-    enum type_status status;
+    enum entrant_status status;
     int check_time, current_time, 
             track_total, hit_cp = 0;
     
@@ -208,7 +208,7 @@ int find_next_checkpoint(Linked_List nodes, Entrant * e) {
     return node->num;
 }
 
-void convert_type_status(enum type_status type, char buffer[OUTPUT_BUFF]) {
+void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]) {
     switch(type) {
         case NOT_STARTED:
             strcpy(buffer, "Not yet started.");

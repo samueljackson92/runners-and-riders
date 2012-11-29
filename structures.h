@@ -14,9 +14,16 @@ extern "C" {
     
 #include "linked_list.h"
     
-#define MAX_EVENT_NAME_SIZE 50
-#define MAX_ENTRANT_NAME_SIZE 50
-#define MAX_DATE_SIZE 20
+/*Macro defining the maximum size of an event name.*/
+#define MAX_EVENT_NAME_SIZE 51
+    
+/*Macro defining the maximum size of an entrant name.*/
+#define MAX_ENTRANT_NAME_SIZE 51
+
+/*Maximum size of a textual date string (e.g. 12th June 2012)*/
+#define MAX_DATE_SIZE 21
+    
+/*Maximum size of time string (e.g. 09:00)*/
 #define TIME_STRING_SIZE 6
 
 /*enum to signify what type of checkpoint a node is*/
@@ -46,7 +53,7 @@ typedef struct course {
 } Course;
 
 /*enum to signify what the current status of an entrant is*/
-enum type_status {
+enum entrant_status {
     NOT_STARTED,
     MC_CHECKPOINT,
     ON_TRACK,
@@ -66,7 +73,7 @@ typedef struct checkpoint_data {
 
 /*Structure to hold information about an entrants status in the competition*/
 typedef struct status {
-    enum type_status type;
+    enum entrant_status type;
     CP_Data * cp_data;
     int nodes_visited;
     int location_ref; /*i.e. track number, node number etc.*/
