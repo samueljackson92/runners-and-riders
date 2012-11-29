@@ -23,8 +23,12 @@ typedef struct linked_list {
 }Linked_List;
 
 void add_element(Linked_List *, List_Node *);
+
 void * get_element_data(List_Node *list, int number);
+
 List_Node * get_element(List_Node *list, int number);
+
+void traverse_list(List_Node *current, void (*process_node)(void *data));
 
 #ifdef	__cplusplus
 }

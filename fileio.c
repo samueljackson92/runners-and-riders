@@ -5,11 +5,11 @@
 #include "fileio.h"
 #include "structures.h"
 #include "linked_list.h"
+#include "util.h"
 
 void read_file_data(Event *e){
     char filename[MAX_FILENAME_LENGTH];
-    
-    
+
     /*printf("Enter name of event details file:\n");
     scanf(" %100s", filename);*/
     read_file("name.txt", &read_event_details, e);
@@ -85,23 +85,6 @@ void read_nodes(FILE *file, Event *e){
     }
 }
 
-Track * findTrack(Linked_List list, int node_a, int node_b) {
-    List_Node * current = list.head;
-    Track * current_track;
-    int found =0;
-    
-    while (!found && current->next != NULL) {
-        current_track = (Track*) current->data;
-        if ((node_a == current_track->nodea && node_b == current_track->nodeb)
-            || (node_a == current_track->nodeb && node_b == current_track->nodea)) {
-            found = 1;
-        }
-        current = current->next;
-    }
-    
-    return current_track;
-}
-
 void read_courses (FILE *file, Event *e) {
     int status, i;
     char name;
@@ -133,7 +116,7 @@ void read_courses (FILE *file, Event *e) {
             /*build a list of tracks that are part of this course*/
             for(i=0;i<path_size-1;i++) {
                 track_node = (List_Node *) malloc(sizeof(List_Node));
-                track = findTrack(e->tracklist, course->nodes[i], course->nodes[i+1]);
+                track = find_track(e->tracklist, course->nodes[i], course->nodes[i+1]);
                 track_node->data = track;
                 add_element(&course->tracks, track_node);
             }
@@ -159,27 +142,10 @@ void read_tracks(FILE *file, Event *e) {
     }
 }
 
-Course * findCourse(Linked_List *list, char c) {
-    List_Node *current = list->head;
-    Course * current_course;
-    int found = 0;
-    
-    while (!found && current->next != NULL){
-        current_course = (Course *) current->data;
-        if(c == current_course->name){
-            found = 1;
-        }
-        current = current->next;
-    }
-    
-    return current_course;
-}
-
 void read_entrants(FILE *file, Event *e) {
     Entrant *entrant;
     List_Node *new;
     Course *course;
-    Track *track;
     int status;
     
     while (!feof(file)) {
@@ -201,21 +167,4 @@ void read_entrants(FILE *file, Event *e) {
             add_element(&e->entrantlist, new);
         }
     } 
-}
-
-void read_updates(Event *e) {
-    char filename[MAX_FILENAME_LENGTH];
-    CP_Data data;
-    
-    printf("Enter name of the checkpoint files:\n");
-    scanf(" %s", filename);
-    
-    FILE *file = fopen(filename, "r");
-    
-    while (!feof(file)){
-        fscanf(file, "%c %d %d %5[0-9:]s", &data.type, &data.node, 
-                &data.competitor, data.time);
-        add_new_time(e, data);
-    }
-    update_others(e, data);
 }

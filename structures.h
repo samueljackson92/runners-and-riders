@@ -1,6 +1,6 @@
 /* 
  * File:   structures.h
- * Author: samuel
+ * Author: Samuel Jackson
  *
  * Created on 13 November 2012, 10:04
  */
@@ -19,6 +19,7 @@ extern "C" {
 #define MAX_DATE_SIZE 20
 #define TIME_STRING_SIZE 6
 
+/*enum to signify what type of checkpoint a node is*/
 enum check_point {
     CP, JN, MC
 };
@@ -44,6 +45,7 @@ typedef struct course {
     Linked_List tracks;
 } Course;
 
+/*enum to signify what the current status of an entrant is*/
 enum type_status {
     NOT_STARTED,
     MC_CHECKPOINT,
@@ -54,6 +56,7 @@ enum type_status {
     EXCLUDED_IR
 };
 
+/*Structure to hold information about data for a checkpoint update*/
 typedef struct checkpoint_data {
     int competitor;
     int node;
@@ -89,7 +92,7 @@ typedef struct event {
     char name[MAX_EVENT_NAME_SIZE];
     char date[MAX_DATE_SIZE];
     char start_time[TIME_STRING_SIZE];
-    int no_of_entrants;
+    int num_of_entrants;
     Linked_List nodelist;
     Linked_List tracklist;
     Linked_List courselist;

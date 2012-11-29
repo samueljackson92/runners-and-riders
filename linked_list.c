@@ -11,23 +11,6 @@ void add_element(Linked_List *list, List_Node *new) {
     }
 }
 
-List_Node * get_element(List_Node *list, int number){
-    int count = 0;
-    List_Node *current = list;
-    
-    while(count != number) {
-        count++;
-        current = current->next;
-    }
-    
-    return current;
-}
-
-void * get_element_data(List_Node *list, int number) {
-    List_Node *found = get_element(list, number);
-    return found->data;
-}
-
 void traverse_list(List_Node *current, void (*process_node)(void *data)) {
     if(current != NULL) {
         process_node(current->data);
