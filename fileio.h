@@ -14,8 +14,7 @@ extern "C" {
 
 #include <stdio.h>
 #include "structures.h"
-#define MAX_FILENAME_LENGTH 100
-#define FILE_PATH_SIZE 54
+#define MAX_FILENAME_LENGTH 101
 
 /*read in the name of each of the data files from the user.*/
 void read_file_data(Event *e);

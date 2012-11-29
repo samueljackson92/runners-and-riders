@@ -9,48 +9,40 @@
 void read_file_data(Event *e){
     char filename[MAX_FILENAME_LENGTH];
     
-    /*
-    printf("Enter name of event details file:\n");
-    scanf(" %s", filename);*/
+    
+    /*printf("Enter name of event details file:\n");
+    scanf(" %100s", filename);*/
     read_file("name.txt", &read_event_details, e);
     
     /*printf("Enter name of the nodes file:\n");
-    scanf(" %s", filename);*/
+    scanf(" %100s", filename);*/
     read_file("nodes.txt", &read_nodes, e);
     
     /*printf("Enter name of the tracks file:\n");
-    scanf(" %s", filename);*/
+    scanf(" %100s", filename);*/
     read_file("tracks.txt", &read_tracks, e);
     
-    /*
-    printf("Enter name of the courses file:\n");
-    scanf(" %s", filename);*/
+    /*printf("Enter name of the courses file:\n");
+    scanf(" %100s", filename);*/
     read_file("courses.txt", &read_courses, e);
     
     /*printf("Enter name of the entrants file:\n");
-    scanf(" %s", filename);*/
+    scanf(" %100s", filename);*/
     read_file("entrants.txt", &read_entrants, e);
-    
-    /*printf("Enter name of the checkpoint files:\n");
-    scanf(" %s", filename);
-    read_file("", &read_checkpoint_data);*/
     
 }
 
-void read_file(char name[MAX_FILENAME_LENGTH], void (*read_file_func) (FILE *, Event *), Event *e){
+void read_file(char filename[MAX_FILENAME_LENGTH], void (*read_file_func) (FILE *, Event *), Event *e){
     FILE *file;
-    char filepath[FILE_PATH_SIZE];
-    strcpy(filepath, "res2/");
-    strcat(filepath, name);
     
-    file = fopen(filepath, "r");
+    file = fopen(filename, "r");
     if(file != NULL) {
         /*file opened successfully, read it.*/
         read_file_func(file, e);
     } else {
         /*couldn't open file, output error*/
         puts("Error opening file!");
-        puts(filepath);
+        puts(filename);
     }
     fclose(file);
 }
@@ -62,19 +54,29 @@ void read_event_details(FILE *file, Event *e){
     fscanf(file, " %[0-9:]s", e->start_time);
 }
 
+enum check_point convert_node_type(char type_string[3]){
+    enum check_point type;
+    if(!strcmp(type_string, "CP")) {
+        type = CP;
+    } else if (!strcmp(type_string, "JN")) {
+        type = JN;
+    }
+    return type;
+}
+
 void read_nodes(FILE *file, Event *e){
     int num;
     Node *node; /*new node to store data */
     List_Node *new; /*new list element to wrap node*/
-    char cp[3];
+    char type[3];
     
     while (!feof(file)) {
         node = malloc(sizeof(Node));
         new = malloc(sizeof(List_Node));
         
-        fscanf(file, "%d %s", &num, cp);
+        fscanf(file, "%d %s", &num, type);
         node->num = num;
-        node->type = CP;
+        node->type = convert_node_type(type);
 
         new->data = node;
         new->next = NULL;

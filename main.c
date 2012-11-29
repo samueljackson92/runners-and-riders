@@ -36,11 +36,11 @@ int main(int argc, char** argv) {
                 "8 - Print entrants excluded at medical checkpoints\n"
                 "9 - Print entrants excluded at regular checkpoints\n");
         
-        scanf("%d", &option);
-        clearScreen();
+        scanf(" %d", &option);
+        clear_screen();
         switch(option) {
             case 1:
-                queryCompetitor(e);
+                query_competitor(e);
                 break;
             case 2:
                 result = check_num_competitors(&e->entrantlist, NOT_STARTED);
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
     return (EXIT_SUCCESS);
 }
 
-void clearScreen() {
+void clear_screen() {
     if(system("clear")) {
         system("cls");
     }
@@ -126,7 +126,7 @@ Entrant * find_entrant(Linked_List list, int id) {
     return entrant;
 }
 
-void queryCompetitor(Event *e) {
+void query_competitor(Event *e) {
     int id;
     Track *t;
     Entrant *entrant;
@@ -134,19 +134,24 @@ void queryCompetitor(Event *e) {
     printf("Enter id for the competitor:\n");
     scanf("%d", &id);
     
+    clear_screen();
+    
     entrant = find_entrant(e->entrantlist, id);
     
     printf("COMPETITOR %d:\n", id);
     printf("Name: %s\n", entrant->name);
     printf("Status: %s\n", convert_type_status(entrant->state.type));
     
-    if (entrant->state.type == ON_TRACK) {
-        t = (Track *) entrant->current_track->data;
-        printf("Last recorded time: %s\n", entrant->cp_data.time);
-        printf("Location Reference: %d\n", entrant->state.location_ref);
-        printf("Currently on track between node %d and node %d\n", t->nodea, t->nodeb);
-    } else {
-        printf("Currently at node: %d\n", entrant->state.location_ref);
+    switch(entrant->state.type) {
+        case ON_TRACK:
+            t = (Track *) entrant->current_track->data;
+            printf("Last recorded time: %s\n", entrant->cp_data.time);
+            printf("Location Reference: %d\n", entrant->state.location_ref);
+            printf("Presumed on track between node %d and node %d\n", t->nodea, t->nodeb);
+            break;
+        default:
+            printf("Currently at node: %d\n", entrant->state.location_ref);
+            break;
     }
 }
 
@@ -268,33 +273,78 @@ int convert_time_to_mins(char time[TIME_STRING_SIZE]) {
     return (hours*60) + mins;
 }
 
+Node * find_node(Linked_List list, int id) {
+    List_Node *current = list.head;
+    Node *node;
+    int found = 0;
+    
+    while (!found && current->next != NULL) {
+        node = (Node*) current->data;
+        if(node->num == id) {
+            found = 1;
+        }
+        current = current->next;
+    }
+    
+    return node;
+}
+
+int find_next_checkpoint(Linked_List nodes, Entrant * e) {
+    Node *node;
+    int i;
+    
+    i = e->state.nodes_visited+2;
+    node = find_node(nodes, i);
+    while(node->type != CP) {
+        i++;
+        node = find_node(nodes, i);
+    }
+    
+    return node->num;
+}
+
 void update_others(Event *evt, CP_Data data){
     List_Node *current_entrant = evt->entrantlist.head;
     Track *track;
-    Entrant *e;
+    Entrant *entrant;
     enum type_status status;
-    int check_time, current_time, track_total;
+    int check_time, current_time, 
+            track_total, hit_cp = 0;
     
     while(current_entrant->next != NULL) {
-        e = (Entrant *) current_entrant->data;
-        status = e->state.type;
+        entrant = (Entrant *) current_entrant->data;
+        status = entrant->state.type;
         
         /*set others to be on track and update there position*/
-        if((status == TIME_CHECKPOINT && data.competitor != e->number) || status == ON_TRACK) {
-                /*entrant already on the track*/
-                track  = (Track *) e->current_track->data;
+        if((status == TIME_CHECKPOINT && data.competitor != entrant->number) || status == ON_TRACK) {
+                if(status == TIME_CHECKPOINT) {
+                    /*get next checkpoint*/
+                    entrant->state.next_cp = find_next_checkpoint(evt->nodelist, entrant);
+                }
+                track  = (Track *) entrant->current_track->data;
                 
-                check_time = convert_time_to_mins(e->cp_data.time); /*time at last checkpoint*/
+                check_time = convert_time_to_mins(entrant->cp_data.time); /*time at last checkpoint*/
                 current_time = convert_time_to_mins(data.time);     /*current time*/
                 track_total = track->time;                          /*time it should take on track*/
                 
                 /*fast forward the entrant along the course*/
-                while(track_total < current_time - check_time) {
-                    e->current_track = e->current_track->next;
-                    track = (Track*) e->current_track->data;
+                while(!hit_cp && track_total < current_time - check_time) {
+                    
+                    track = (Track*) entrant->current_track->data;
+                    
+                    /* if we should have reached a checkpoint*/
+                    if(track->nodea == entrant->state.next_cp || 
+                            track->nodeb == entrant->state.next_cp){
+                        hit_cp = 1;
+                    } else {
+                        entrant->current_track = entrant->current_track->next;
+                        track = (Track*) entrant->current_track->data;
+                    }
+                    
                     track_total += track->time;
                 }
-                e->state.type = ON_TRACK;
+                entrant->state.type = ON_TRACK;
+                entrant->state.location_ref = track->number;
         }
         current_entrant = current_entrant->next;
     }

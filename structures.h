@@ -67,6 +67,7 @@ typedef struct status {
     CP_Data * cp_data;
     int nodes_visited;
     int location_ref; /*i.e. track number, node number etc.*/
+    int next_cp;
 } Status;
 
 /*Structure to hold information about an entrant in the competition.*/
