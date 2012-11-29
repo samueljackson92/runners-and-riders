@@ -8,7 +8,7 @@
 #include "util.h"
 
 void read_file_data(Event *e){
-    char filename[MAX_FILENAME_LENGTH];
+    char filename[MAX_FILEPATH_LENGTH];
 
     /*printf("Enter name of event details file:\n");
     scanf(" %100s", filename);*/
@@ -32,7 +32,7 @@ void read_file_data(Event *e){
     
 }
 
-void read_file(char filename[MAX_FILENAME_LENGTH], void (*read_file_func) (FILE *, Event *), Event *e){
+void read_file(char filename[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE *, Event *), Event *e){
     FILE *file;
     
     file = fopen(filename, "r");

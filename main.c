@@ -144,7 +144,7 @@ void manually_read_data(Event *e) {
 }
 
 void read_updates(Event *e) {
-    char filename[MAX_FILENAME_LENGTH];
+    char filename[MAX_FILEPATH_LENGTH];
     CP_Data data;
     
     printf("Enter name of the checkpoint files:\n");
