@@ -41,8 +41,8 @@ void read_file(char filename[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE 
         read_file_func(file, e);
     } else {
         /*couldn't open file, output error*/
-        puts("Error opening file!");
-        puts(filename);
+        printf("Error opening file!\n");
+        printf("%s\n", filename);
     }
     fclose(file);
 }
@@ -159,7 +159,7 @@ void read_entrants(FILE *file, Event *e) {
             strcpy(entrant->start_time, "00:00");
             strcpy(entrant->end_time, "00:00");
 
-            course = findCourse(&e->courselist, entrant->course);
+            course = find_course(e->courselist, entrant->course);
             entrant->current_track = course->tracks.head;
 
             new->data = entrant;

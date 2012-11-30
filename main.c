@@ -15,11 +15,19 @@
 #include "util.h"
 
 int main(int argc, char** argv) {
+    Event event;
     int option, result;
     
-    Event *e = malloc(sizeof(Event));
+    event.courselist.head = NULL;
+    event.courselist.tail = NULL;
+    event.entrantlist.head = NULL;
+    event.entrantlist.tail = NULL;
+    event.nodelist.head = NULL;
+    event.nodelist.tail = NULL;
+    event.tracklist.head = NULL;
+    event.tracklist.tail = NULL;
     
-    read_file_data(e);
+    read_file_data(&event);
     
     puts("Event data loaded!");
     
@@ -38,45 +46,45 @@ int main(int argc, char** argv) {
         
         scanf(" %d", &option);
         clear_screen();
+        
         switch(option) {
             case 1:
-                query_competitor(e);
+                query_competitor(event.entrantlist);
                 break;
             case 2:
-                result = check_num_competitors(&e->entrantlist, NOT_STARTED);
+                result = check_num_competitors(event.entrantlist, NOT_STARTED);
                 printf("%d competitors have not yet started\n", result);
                 break;
             case 3:
-                result = check_num_competitors(&e->entrantlist, ON_TRACK);
+                result = check_num_competitors(event.entrantlist, ON_TRACK);
                 printf("%d competitors are out on a course\n", result);
                 break;
             case 4:
-                result = check_num_competitors(&e->entrantlist, COMPLETED);
+                result = check_num_competitors(event.entrantlist, COMPLETED);
                 printf("%d competitors have completed their course\n", result);
                 break;
             case 5:
-                manually_read_data(e);
+                manually_read_data(&event);
                 break;
             case 6:
-                read_updates(e);
+                read_updates(&event);
                 break;
             case 7:
-                print_results(e);
+                print_results(event.entrantlist);
                 break;
             case 8:
-                print_entrants_excluded(e, EXCLUDED_MC);
+                print_entrants_excluded(event.entrantlist, EXCLUDED_MC);
                 break;
             case 9:
-                print_entrants_excluded(e, EXCLUDED_IR);
+                print_entrants_excluded(event.entrantlist, EXCLUDED_IR);
                 break;
         }
     } while (option != 0);
     
-    free(e);
     return (EXIT_SUCCESS);
 }
 
-void query_competitor(Event *e) {
+void query_competitor(Linked_List entrantlist) {
     int id;
     Track *t;
     Entrant *entrant;
@@ -87,7 +95,7 @@ void query_competitor(Event *e) {
     
     clear_screen();
     
-    entrant = find_entrant(e->entrantlist, id);
+    entrant = find_entrant(entrantlist, id);
     convert_type_status(entrant->state.type, buff);
     
     printf("COMPETITOR %d:\n", id);
@@ -107,9 +115,9 @@ void query_competitor(Event *e) {
     }
 }
 
-int check_num_competitors(Linked_List *el, enum entrant_status type) {
+int check_num_competitors(Linked_List entrantlist, enum entrant_status type) {
     int count = 0;
-    List_Node *current = el->head;
+    List_Node *current = entrantlist.head;
     Entrant *entrant;
     
     while (current->next != NULL) {
@@ -124,7 +132,7 @@ int check_num_competitors(Linked_List *el, enum entrant_status type) {
     return count;
 }
 
-void manually_read_data(Event *e) {
+void manually_read_data(Event *evt) {
     CP_Data data;
     
     printf("Enter the type of check point (T/I/A/D/E):\n");
@@ -139,8 +147,8 @@ void manually_read_data(Event *e) {
     printf("Enter the time recorded:\n");
     scanf(" %[0-9:]s", data.time);
 
-    add_new_time(e, data);
-    update_others(e, data);
+    add_new_time(evt, data);
+    update_others(evt, data);
 }
 
 void read_updates(Event *e) {
@@ -157,6 +165,8 @@ void read_updates(Event *e) {
                 &data.competitor, data.time);
         add_new_time(e, data);
     }
+    
+    fclose(file);
     update_others(e, data);
 }
 
@@ -179,18 +189,18 @@ void print_entrant(void *data) {
             total_hours, total_mins);
 }
 
-void print_results(Event *e){
+void print_results(Linked_List entrantlist){
     printf("-------------------------------------------------------------------------------\n");
     printf("|Competitor           |  Course  |  Start Time |   End Time  |     Total      |\n");
     printf("|-----------------------------------------------------------------------------|\n");
     
-    traverse_list(e->entrantlist.head, &print_entrant);
+    traverse_list(entrantlist.head, &print_entrant);
     
     printf("-------------------------------------------------------------------------------\n");
 }
 
-void print_entrants_excluded(Event *e, enum entrant_status type) {    
-    List_Node *current = e->entrantlist.head;
+void print_entrants_excluded(Linked_List entrantlist, enum entrant_status type) {    
+    List_Node *current = entrantlist.head;
     Entrant *entrant;
     
     if(type == EXCLUDED_MC) {

@@ -42,10 +42,7 @@ Track * find_track(Linked_List list, int node_a, int node_b);
 Entrant * find_entrant(Linked_List list, int id);
 
 /*Find a course using its id*/
-Course * findCourse(Linked_List *list, char c);
-
-/*Find a node using its id*/
-Node * find_node(Linked_List list, int id);
+Course * find_course(Linked_List list, char c);
 
 /*Find the given entrant's next checkpoint on their course*/
 int find_next_checkpoint(Linked_List nodes, Entrant * e);

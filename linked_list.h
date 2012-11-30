@@ -29,7 +29,7 @@ typedef struct linked_list {
 }Linked_List;
 
 /*add a new element to the specified linked list*/
-void add_element(Linked_List *, List_Node *);
+void add_element(Linked_List *list, List_Node * node);
 
 /*traverse the list and run the given function on each data item.*/
 void traverse_list(List_Node *current, void (*process_node)(void *data));
