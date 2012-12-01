@@ -29,10 +29,10 @@ void query_competitor(Linked_List eventlist);
 int check_num_competitors(Linked_List eventlist, enum entrant_status type);
 
 /*Let the user manually enter a checkpoint update into the system.*/
-void manually_read_data(Event *evt);
+void manually_read_data(event *evt);
 
 /*Read in a specified file of recorded checkpoint times into the system.*/
-void read_updates(Event *evt);
+void read_updates(event *evt);
 
 /*Print each competitors along with the time they started and the time they finished.*/
 void print_results(Linked_List eventlist);

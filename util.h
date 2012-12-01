@@ -21,13 +21,13 @@ extern "C" {
 #define OUTPUT_BUFF 50
 
 /*Add a new time recorded at a checkpoint into the program.*/
-void add_new_time(Event *e, CP_Data data);
+void add_new_time(event *e, CP_Data data);
 
 /*Update the other competitors in the competition relative to the last update*/
-void update_others(Event *evt, CP_Data data);
+void update_others(event *evt, CP_Data data);
 
 /*Update the position on an entrant currently out on a track*/
-void update_entrant_on_track(Event * evt, Entrant * entrant, CP_Data data);
+void update_entrant_on_track(event * evt, entrant * entrant, CP_Data data);
 
 /*Convert a given entrant status into a user readable string*/
 void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]);
@@ -39,16 +39,16 @@ int convert_time_to_mins(char time[TIME_STRING_SIZE]);
 int calc_time_diff (char *start, char *end);
 
 /*Find a track given by comparing if it consists of the two given nodes*/
-Track * find_track(Linked_List list, int node_a, int node_b);
+track * find_track(Linked_List list, int node_a, int node_b);
 
 /*Find an entrant using its id*/
-Entrant * find_entrant(Linked_List list, int id);
+entrant * find_entrant(Linked_List list, int id);
 
 /*Find a course using its id*/
-Course * find_course(Linked_List list, char c);
+course * find_course(Linked_List list, char c);
 
 /*Find the given entrant's next checkpoint on their course*/
-int find_next_checkpoint(Linked_List nodes, Entrant * e);
+int find_next_checkpoint(Linked_List nodes, entrant * e);
 
 #ifdef	__cplusplus
 }

@@ -15,7 +15,7 @@
 #include "util.h"
 
 int main(int argc, char** argv) {
-    Event event;
+    event event;
     int option, result;
     
     event.courselist.head = NULL;
@@ -86,8 +86,8 @@ int main(int argc, char** argv) {
 
 void query_competitor(Linked_List entrantlist) {
     int entrant_id;
-    Track *track;
-    Entrant *entrant;
+    track *track_data;
+    entrant *entrant;
     char status_buff[OUTPUT_BUFF];
     
     printf("Enter id for the competitor:\n");
@@ -104,10 +104,13 @@ void query_competitor(Linked_List entrantlist) {
     
     switch(entrant->state.type) {
         case ON_TRACK:
-            track = (Track *) entrant->current_track->data;
-            printf("Last recorded time: %s\n", entrant->cp_data.time);
+            track_data = (track*) entrant->current_track->data;
+            printf("Last recorded time: %s\n", entrant->state.current_cp_data->time);
+            if(entrant->state.late) {
+                printf("This entrant is currently running late to the next checkpoint\n");
+            }
             printf("Location Reference: %d\n", entrant->state.location_ref);
-            printf("Presumed on track between node %d and node %d\n", track->nodea, track->nodeb);
+            printf("Presumed on track between node %d and node %d\n", track_data->nodea, track_data->nodeb);
             break;
         default:
             printf("Currently at node: %d\n", entrant->state.location_ref);
@@ -118,13 +121,13 @@ void query_competitor(Linked_List entrantlist) {
 int check_num_competitors(Linked_List entrantlist, enum entrant_status type) {
     int count = 0;
     List_Node *current = entrantlist.head;
-    Entrant *entrant;
+    entrant *entrant_data;
     
     while (current->next != NULL) {
-        entrant = (Entrant*) current->data;
-        if (entrant->state.type == type) {
+        entrant_data = (entrant*) current->data;
+        if (entrant_data->state.type == type) {
             count++;
-            printf("%s\n", entrant->name);
+            printf("%s\n", entrant_data->name);
         }
         current = current->next;
     }
@@ -132,7 +135,7 @@ int check_num_competitors(Linked_List entrantlist, enum entrant_status type) {
     return count;
 }
 
-void manually_read_data(Event *evt) {
+void manually_read_data(event *evt) {
     CP_Data checkpoint_data;
     
     printf("Enter the type of check point (T/I/A/D/E):\n");
@@ -151,7 +154,7 @@ void manually_read_data(Event *evt) {
     update_others(evt, checkpoint_data);
 }
 
-void read_updates(Event *e) {
+void read_updates(event *e) {
     char filename[MAX_FILEPATH_LENGTH];
     CP_Data checkpoint_data;
     
@@ -171,21 +174,21 @@ void read_updates(Event *e) {
 }
 
 void print_entrant(void *data) {
-    Entrant *entrant = (Entrant*) data;
+    entrant *entrant_data = (entrant*) data;
     int total_hours = 0;
     int total_mins = 0;
         
-    if(entrant->state.type == COMPLETED) {
-            total_hours = calc_time_diff(entrant->start_time, entrant->end_time);
-            total_mins = calc_time_diff(&entrant->start_time[3], &entrant->start_time[3]);
+    if(entrant_data->state.type == COMPLETED) {
+            total_hours = calc_time_diff(entrant_data->start_time, entrant_data->end_time);
+            total_mins = calc_time_diff(&entrant_data->start_time[3], &entrant_data->start_time[3]);
 
-            total_hours -= entrant->mc_time_delay_hours;
-            total_mins -= entrant->mc_time_delay_mins;
+            total_hours -= entrant_data->mc_time_delay_hours;
+            total_mins -= entrant_data->mc_time_delay_mins;
     }
 
     printf("|%-21s|    %c     |    %s    |    %s    |  %.2dhrs %.2dmins  |\n", 
-            entrant->name, entrant->course, 
-            entrant->start_time, entrant->end_time, 
+            entrant_data->name, entrant_data->course, 
+            entrant_data->start_time, entrant_data->end_time, 
             total_hours, total_mins);
 }
 
@@ -201,7 +204,7 @@ void print_results(Linked_List entrantlist){
 
 void print_entrants_excluded(Linked_List entrantlist, enum entrant_status type) {    
     List_Node *current = entrantlist.head;
-    Entrant *entrant;
+    entrant *entrant_data;
     
     if(type == EXCLUDED_MC) {
         printf("Competitors Excluded from Medical Checkpoints\n");
@@ -214,10 +217,10 @@ void print_entrants_excluded(Linked_List entrantlist, enum entrant_status type) 
     printf("|----------------------------------------|\n");
     
     while (current->next != NULL) {
-        entrant = (Entrant*) current->data;
-        if(entrant->state.type == type) {
-            printf("|%-21s|   %.2d   |  %s  |\n", entrant->name, 
-                entrant->state.location_ref, entrant->cp_data.time);
+        entrant_data = (entrant*) current->data;
+        if(entrant_data->state.type == type) {
+            printf("|%-21s|   %.2d   |  %s  |\n", entrant_data->name, 
+                entrant_data->state.location_ref, entrant_data->state.current_cp_data->time);
         }
         current = current->next;
     }
