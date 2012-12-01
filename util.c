@@ -13,8 +13,8 @@
 #include "util.h"
 
 /* Find a track using the two nodes it links to.*/
-track * find_track(Linked_List list, int node_a, int node_b) {
-    List_Node * current = list.head;
+track * find_track(linked_list list, int node_a, int node_b) {
+    list_node * current = list.head;
     track * track_data = NULL;
     int found = 0;
     
@@ -31,8 +31,8 @@ track * find_track(Linked_List list, int node_a, int node_b) {
 }
 
 /* Find an entrant using the entrants ID number */
-entrant * find_entrant(Linked_List list, int id) {
-    List_Node *current = list.head;
+entrant * find_entrant(linked_list list, int id) {
+    list_node *current = list.head;
     entrant *entrant_data = NULL;
     int found = 0;
     
@@ -48,8 +48,8 @@ entrant * find_entrant(Linked_List list, int id) {
 }
 
 /* Find a course using the courses ID character*/
-course * find_course(Linked_List list, char c) {
-    List_Node *current = list.head;
+course * find_course(linked_list list, char c) {
+    list_node *current = list.head;
     course * course_data = NULL;
     int found = 0;
     
@@ -65,25 +65,21 @@ course * find_course(Linked_List list, char c) {
 }
 
 /* Find the next checkpoint on the course given the current competitor */
-int find_next_checkpoint(Linked_List nodes, entrant * e) {
+int find_next_checkpoint(linked_list nodes, entrant * e) {
     node *node_data = NULL;
-    List_Node *current = nodes.head;
+    list_node *current = nodes.head;
     int i, count = 0, found = 0;
     
     i = e->state.nodes_visited+2; /* ID is not zero based, so +2 */
     
-    /* Zoom forward through the list until we reach the competitors last known location*/
-    while (count < i) {
-        current = current->next;
-        count++;
-    }
-    
     /* Keep looking ahead until we find a checkpoint */
     while(!found && current->next != NULL) {
+        count++;
         node_data = (node*) current->data;
-        if(node_data->type == CP) {
+        if(count >= i && node_data->type == CP) {
             found = 1;
         }
+        current = current->next;
     }
     
     return node_data->num;

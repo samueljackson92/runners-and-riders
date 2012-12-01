@@ -33,16 +33,16 @@ int convert_time_to_mins(char time[TIME_STRING_SIZE]);
 int calc_time_diff (char *start, char *end);
 
 /*Find a track given by comparing if it consists of the two given nodes*/
-track * find_track(Linked_List list, int node_a, int node_b);
+track * find_track(linked_list list, int node_a, int node_b);
 
 /*Find an entrant using its id*/
-entrant * find_entrant(Linked_List list, int id);
+entrant * find_entrant(linked_list list, int id);
 
 /*Find a course using its id*/
-course * find_course(Linked_List list, char c);
+course * find_course(linked_list list, char c);
 
 /*Find the given entrant's next checkpoint on their course*/
-int find_next_checkpoint(Linked_List nodes, entrant * e);
+int find_next_checkpoint(linked_list nodes, entrant * e);
 
 #ifdef	__cplusplus
 }

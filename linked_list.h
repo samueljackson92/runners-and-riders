@@ -15,24 +15,23 @@ extern "C" {
 /* Structure to hold data about a single node in the linked list
  * uses void pointers to hold a reference to data of any type.
  */
-typedef struct list_node {
+typedef struct list_node_s {
     void *data;
-    struct list_node *next;
-}List_Node;
-
+    struct list_node_s *next;
+}list_node;
 /* Structure to hold pointers to the head and tail of a whole list.
  * Uses the pointer to the tail for faster insertion.
  */
-typedef struct linked_list {
-    List_Node *head;
-    List_Node *tail;
-}Linked_List;
+typedef struct linked_list_s {
+    list_node *head;
+    list_node *tail;
+}linked_list;
 
 /*add a new element to the specified linked list*/
-void add_element(Linked_List *list, List_Node * node);
+void add_element(linked_list *list, list_node * node);
 
 /*traverse the list and run the given function on each data item.*/
-void traverse_list(List_Node *current, void (*process_node)(void *data));
+void traverse_list(list_node *current, void (*process_node)(void *data));
 
 #ifdef	__cplusplus
 }

@@ -21,25 +21,25 @@
 void read_file_data(event *e){
     char filename[MAX_FILEPATH_LENGTH];
 
-    printf("Enter name of event details file:\n");
-    scanf(" %100s", filename);
-    read_file("name.txt", &read_event_details, e);
+    /*printf("Enter location and name of event details file:\n");
+    scanf(" %100s", filename);*/
+    read_file("event_3/name.txt", &read_event_details, e);
     
-    printf("Enter name of the nodes file:\n");
-    scanf(" %100s", filename);
-    read_file("nodes.txt", &read_nodes, e);
+   /* printf("Enter location and name of the nodes file:\n");
+    scanf(" %100s", filename);*/
+    read_file("event_3/nodes.txt", &read_nodes, e);
     
-    printf("Enter name of the tracks file:\n");
-    scanf(" %100s", filename);
-    read_file("tracks.txt", &read_tracks, e);
+    /*printf("Enter location and name of the tracks file:\n");
+    scanf(" %100s", filename);*/
+    read_file("event_3/tracks.txt", &read_tracks, e);
     
-    printf("Enter name of the courses file:\n");
-    scanf(" %100s", filename);
-    read_file("courses.txt", &read_courses, e);
+    /*printf("Enter location and name of the courses file:\n");
+    scanf(" %100s", filename);*/
+    read_file("event_3/courses.txt", &read_courses, e);
     
-    printf("Enter name of the entrants file:\n");
-    scanf(" %100s", filename);
-    read_file("entrants.txt", &read_entrants, e);
+   /* printf("Enter location and name of the entrants file:\n");
+    scanf(" %100s", filename);*/
+    read_file("event_3/entrants.txt", &read_entrants, e);
     
 }
 
@@ -70,19 +70,19 @@ void read_event_details(FILE *file, event *e){
 /* Function to read in the nodes file*/
 void read_nodes(FILE *file, event *e){
     int num;
-    node *node; /*new node to store data */
-    List_Node *new_element; /*new list element to wrap node*/
+    node *node_data; /*new node to store data */
+    list_node *new_element; /*new list element to wrap node*/
     char type[3];
     
     while (!feof(file)) {
-        node = malloc(sizeof(node));
-        new_element = malloc(sizeof(List_Node));
+        node_data = malloc(sizeof(node));
+        new_element = malloc(sizeof(list_node));
         
         fscanf(file, "%d %s", &num, type);
-        node->num = num;
-        node->type = convert_node_type(type);
+        node_data->num = num;
+        node_data->type = convert_node_type(type);
 
-        new_element->data = node;
+        new_element->data = node_data;
         new_element->next = NULL;
 
         add_element(&e->nodelist, new_element);
@@ -93,35 +93,35 @@ void read_nodes(FILE *file, event *e){
 void read_courses (FILE *file, event *e) {
     int status, i;
    
-    course *course;
-    List_Node *node, *track_node;
+    course *course_data;
+    list_node *node, *track_node;
     track *track;
     
     while (!feof(file)) {
-        course = malloc(sizeof(course));
-        node = malloc(sizeof(List_Node));
+        course_data = malloc(sizeof(course));
+        node = malloc(sizeof(list_node));
         
-        status = fscanf(file, " %c", &course->name);
+        status = fscanf(file, " %c", &course_data->name);
         if(status != EOF) {
             /*read in the number of nodes in the course*/
-            fscanf(file, " %d", &course->path_size);
+            fscanf(file, " %d", &course_data->path_size);
 
-            course->nodes = malloc(course->path_size * sizeof(int));
+            course_data->nodes = malloc(course_data->path_size * sizeof(int));
             
             /* Read in an array of all the nodes in this course. */
-            for (i=0; i<course->path_size; i++) {
-                fscanf(file, " %d", &course->nodes[i]);
+            for (i=0; i<course_data->path_size; i++) {
+                fscanf(file, " %d", &course_data->nodes[i]);
             } 
             
             /*build a list of tracks that are part of this course*/
-            for(i=0;i<course->path_size-1;i++) {
-                track_node = (List_Node *) malloc(sizeof(List_Node));
-                track = find_track(e->tracklist, course->nodes[i], course->nodes[i+1]);
+            for(i=0;i<course_data->path_size-1;i++) {
+                track_node = (list_node *) malloc(sizeof(list_node));
+                track = find_track(e->tracklist, course_data->nodes[i], course_data->nodes[i+1]);
                 track_node->data = track;
-                add_element(&course->tracks, track_node);
+                add_element(&course_data->tracks, track_node);
             }
 
-            node->data = course;
+            node->data = course_data;
             add_element(&e->courselist, node);
         }
     }
@@ -129,43 +129,48 @@ void read_courses (FILE *file, event *e) {
 
 /*Function to read in a file of tracks */
 void read_tracks(FILE *file, event *e) {
-    track *track;
-    List_Node *new_element;
+    track *track_data;
+    list_node *new_element;
     
     while (!feof(file)){
-        track = malloc(sizeof(track));
-        new_element = malloc(sizeof(List_Node));
-        fscanf(file, "%d %d %d %d", &track->number, 
-                &track->nodea, &track->nodeb, &track->time);
+        track_data = malloc(sizeof(track));
+        new_element = malloc(sizeof(list_node));
+        fscanf(file, "%d %d %d %d", &track_data->number, 
+                &track_data->nodea, &track_data->nodeb, &track_data->time);
         
-        new_element->data = track;
+        new_element->data = track_data;
         add_element(&e->tracklist, new_element);
     }
 }
 
 /* Function to read in a file of entrants */
 void read_entrants(FILE *file, event *e) {
-    entrant *entrant;
-    List_Node *new_element;
+    entrant *entrant_data;
+    list_node *new_element;
     course *course;
     int status;
     
     while (!feof(file)) {
-        entrant = malloc(sizeof(entrant));
-        new_element = malloc(sizeof(List_Node));
-        status = fscanf(file, " %d %c %[a-zA-Z ]s", &entrant->number,
-                &entrant->course, entrant->name);
+        entrant_data = malloc(sizeof(entrant));
+ 
+        new_element = malloc(sizeof(list_node));
+        status = fscanf(file, " %d %c %[a-zA-Z ]s", &entrant_data->number,
+                &entrant_data->course, entrant_data->name);
         
         if(status != EOF) {
-            entrant->state.type = NOT_STARTED;
-            strcpy(entrant->start_time, "00:00");
-            strcpy(entrant->end_time, "00:00");
+            entrant_data->state.type = NOT_STARTED;
+            strcpy(entrant_data->start_time, "00:00");
+            strcpy(entrant_data->end_time, "00:00");
 
-            course = find_course(e->courselist, entrant->course);
-            entrant->current_track = course->tracks.head;
-            entrant->state.late = 0;
+            course = find_course(e->courselist, entrant_data->course);
+            entrant_data->current_track = course->tracks.head;
+
+            entrant_data->state.nodes_visited = 0;
+            entrant_data->state.location_ref = 0;
+            entrant_data->state.type = NOT_STARTED;
+            entrant_data->state.late = 0;
             
-            new_element->data = entrant;
+            new_element->data = entrant_data;
             new_element->next = NULL;
             add_element(&e->entrantlist, new_element);
         }

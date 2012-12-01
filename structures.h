@@ -49,7 +49,7 @@ typedef struct course_s {
     char name;
     int path_size;
     int *nodes;
-    Linked_List tracks;
+    linked_list tracks;
 } course;
 
 /*enum to signify what the current status of an entrant is*/
@@ -74,12 +74,12 @@ typedef struct checkpoint_data {
 /*Structure to hold information about an entrants status in the competition*/
 typedef struct status_s {
     enum entrant_status type; /*TIME_CHECKPOINT, ON_TRACK etc. */
-    CP_Data * current_cp_data;
+    CP_Data current_cp_data;
     int nodes_visited;
     int location_ref; /*i.e. track number, node number etc.*/
     int next_cp; /*id of next checkpoint*/
     int late; /*are we late to the next checkpoint?*/
-} status;
+} status_struct;
 
 /*Structure to hold information about an entrant in the competition.*/
 typedef struct entrant_s {
@@ -90,8 +90,8 @@ typedef struct entrant_s {
     char end_time[TIME_STRING_SIZE];
     char mc_time_stopped[TIME_STRING_SIZE]; /*time entrant arrived at a MC*/
     int mc_time_delay_hours, mc_time_delay_mins; /*cumulative delays occurred at MCs*/
-    status state; /*detailed state of the entrant*/
-    List_Node *current_track;
+    status_struct state; /*detailed state of the entrant*/
+    list_node *current_track;
 } entrant;
 
 /*structure to hold details about a single event*/
@@ -102,11 +102,11 @@ typedef struct event_s {
     int num_of_entrants;
     
     /*linked lists of all data input from files*/
-    Linked_List nodelist;
-    Linked_List tracklist;
-    Linked_List courselist;
-    Linked_List entrantlist;
-    Linked_List cp_data_buff;
+    linked_list nodelist;
+    linked_list tracklist;
+    linked_list courselist;
+    linked_list entrantlist;
+    linked_list cp_data_buff;
 } event;
 
 #ifdef	__cplusplus

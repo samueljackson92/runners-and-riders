@@ -8,7 +8,7 @@
  */
 
 /* Add an element to the list. Uses tail pointer for faster insertion. */
-void add_element(Linked_List *list, List_Node *new) {
+void add_element(linked_list *list, list_node *new) {
     if(list->head == NULL) {
         list->head = new;
         list->tail = new;
@@ -19,7 +19,7 @@ void add_element(Linked_List *list, List_Node *new) {
 }
 
 /* Traverse the list and execute the given function each on each element. */
-void traverse_list(List_Node *current, void (*process_node)(void *data)) {
+void traverse_list(list_node *current, void (*process_node)(void *data)) {
     if(current != NULL) {
         process_node(current->data);
         traverse_list(current->next, process_node);

@@ -23,10 +23,10 @@ extern "C" {
 #define clear_screen() if(system("clear")){ system("cls"); }
 
 /*Query the current status of a competitor in this event*/
-void query_competitor(Linked_List eventlist);
+void query_competitor(linked_list eventlist);
 
 /*Check the number of competitors with a given status, e.g. ON_TRACK or COMPLETED*/
-int check_num_competitors(Linked_List eventlist, enum entrant_status type);
+int check_num_competitors(linked_list eventlist, enum entrant_status type);
 
 /*Let the user manually enter a checkpoint update into the system.*/
 void manually_read_data(event *evt);
@@ -35,12 +35,12 @@ void manually_read_data(event *evt);
 void read_updates(event *evt);
 
 /*Print each competitors along with the time they started and the time they finished.*/
-void print_results(Linked_List eventlist);
+void print_results(linked_list eventlist);
 
 /*Print a table of entrants that have been excluded depending on their type, 
  * e.g. excluded at a medical checkpoint
  */
-void print_entrants_excluded(Linked_List eventlist, enum entrant_status type);
+void print_entrants_excluded(linked_list eventlist, enum entrant_status type);
 
 /*Add a new time recorded at a checkpoint into the program.*/
 void add_new_time(event *e, CP_Data data);
