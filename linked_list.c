@@ -1,6 +1,13 @@
 #include <stdlib.h>
 #include "linked_list.h"
+/* 
+ * File:   linked_list.c
+ * Author: Samuel Jackson
+ *
+ * Created on 16 November 2012, 10:43
+ */
 
+/* Add an element to the list. Uses tail pointer for faster insertion. */
 void add_element(Linked_List *list, List_Node *new) {
     if(list->head == NULL) {
         list->head = new;
@@ -11,6 +18,7 @@ void add_element(Linked_List *list, List_Node *new) {
     }
 }
 
+/* Traverse the list and execute the given function each on each element. */
 void traverse_list(List_Node *current, void (*process_node)(void *data)) {
     if(current != NULL) {
         process_node(current->data);

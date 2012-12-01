@@ -7,31 +7,43 @@
 #include "linked_list.h"
 #include "util.h"
 
+/* 
+ * File:   util.c
+ * Author: Samuel Jackson
+ *
+ * File contains functions used by the main actions that the user can call from
+ * the main menu.
+ * 
+ * Created on 13 November 2012, 14:34
+ */
+
+/* Read in all of the data files for this event */
 void read_file_data(event *e){
     char filename[MAX_FILEPATH_LENGTH];
 
-    /*printf("Enter name of event details file:\n");
-    scanf(" %100s", filename);*/
+    printf("Enter name of event details file:\n");
+    scanf(" %100s", filename);
     read_file("name.txt", &read_event_details, e);
     
-    /*printf("Enter name of the nodes file:\n");
-    scanf(" %100s", filename);*/
+    printf("Enter name of the nodes file:\n");
+    scanf(" %100s", filename);
     read_file("nodes.txt", &read_nodes, e);
     
-    /*printf("Enter name of the tracks file:\n");
-    scanf(" %100s", filename);*/
+    printf("Enter name of the tracks file:\n");
+    scanf(" %100s", filename);
     read_file("tracks.txt", &read_tracks, e);
     
-    /*printf("Enter name of the courses file:\n");
-    scanf(" %100s", filename);*/
+    printf("Enter name of the courses file:\n");
+    scanf(" %100s", filename);
     read_file("courses.txt", &read_courses, e);
     
-    /*printf("Enter name of the entrants file:\n");
-    scanf(" %100s", filename);*/
+    printf("Enter name of the entrants file:\n");
+    scanf(" %100s", filename);
     read_file("entrants.txt", &read_entrants, e);
     
 }
 
+/* Generic read file function  which takes a file specific processing function as a parameter */
 void read_file(char filename[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE *, event *), event *e){
     FILE *file;
     
@@ -47,6 +59,7 @@ void read_file(char filename[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE 
     fclose(file);
 }
 
+/* Function to read the details of this event */
 void read_event_details(FILE *file, event *e){
     /*read in the details for the event*/
     fscanf(file, " %[A-Za-z0-9- ]s", e->name);
@@ -54,16 +67,7 @@ void read_event_details(FILE *file, event *e){
     fscanf(file, " %[0-9:]s", e->start_time);
 }
 
-enum check_point convert_node_type(char type_string[3]){
-    enum check_point type;
-    if(!strcmp(type_string, "CP")) {
-        type = CP;
-    } else if (!strcmp(type_string, "JN")) {
-        type = JN;
-    }
-    return type;
-}
-
+/* Function to read in the nodes file*/
 void read_nodes(FILE *file, event *e){
     int num;
     node *node; /*new node to store data */
@@ -85,6 +89,7 @@ void read_nodes(FILE *file, event *e){
     }
 }
 
+/* Function to read in a file of courses */
 void read_courses (FILE *file, event *e) {
     int status, i;
    
@@ -98,10 +103,12 @@ void read_courses (FILE *file, event *e) {
         
         status = fscanf(file, " %c", &course->name);
         if(status != EOF) {
+            /*read in the number of nodes in the course*/
             fscanf(file, " %d", &course->path_size);
 
             course->nodes = malloc(course->path_size * sizeof(int));
             
+            /* Read in an array of all the nodes in this course. */
             for (i=0; i<course->path_size; i++) {
                 fscanf(file, " %d", &course->nodes[i]);
             } 
@@ -120,6 +127,7 @@ void read_courses (FILE *file, event *e) {
     }
 }
 
+/*Function to read in a file of tracks */
 void read_tracks(FILE *file, event *e) {
     track *track;
     List_Node *new_element;
@@ -135,6 +143,7 @@ void read_tracks(FILE *file, event *e) {
     }
 }
 
+/* Function to read in a file of entrants */
 void read_entrants(FILE *file, event *e) {
     entrant *entrant;
     List_Node *new_element;

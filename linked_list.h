@@ -1,6 +1,6 @@
 /* 
  * File:   linked_list.h
- * Author: samuel
+ * Author: Samuel Jackson
  *
  * Created on 16 November 2012, 10:45
  */

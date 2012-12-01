@@ -42,6 +42,15 @@ void print_results(Linked_List eventlist);
  */
 void print_entrants_excluded(Linked_List eventlist, enum entrant_status type);
 
+/*Add a new time recorded at a checkpoint into the program.*/
+void add_new_time(event *e, CP_Data data);
+
+/*Update the other competitors in the competition relative to the last update*/
+void update_others(event *evt, CP_Data data);
+
+/*Update the position on an entrant currently out on a track*/
+void update_entrant_on_track(event * evt, entrant * entrant, CP_Data data);
+
 #ifdef	__cplusplus
 }
 #endif

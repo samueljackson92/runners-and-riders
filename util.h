@@ -20,17 +20,11 @@ extern "C" {
  *a type enum to a string*/    
 #define OUTPUT_BUFF 50
 
-/*Add a new time recorded at a checkpoint into the program.*/
-void add_new_time(event *e, CP_Data data);
-
-/*Update the other competitors in the competition relative to the last update*/
-void update_others(event *evt, CP_Data data);
-
-/*Update the position on an entrant currently out on a track*/
-void update_entrant_on_track(event * evt, entrant * entrant, CP_Data data);
-
 /*Convert a given entrant status into a user readable string*/
 void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]);
+
+/*Convert the given checkpoint string into an enum format*/
+enum check_point convert_node_type(char type_string[3]);
 
 /*Convert a given time string into an integer representing the minutes since midnight*/
 int convert_time_to_mins(char time[TIME_STRING_SIZE]);

@@ -42,12 +42,6 @@ void read_courses(FILE * file, event *e);
 /*function to read in a data file of entrants*/
 void read_entrants(FILE *file, event *e);
 
-/*function to read in a data file of new checkpoint data*/
-void read_checkpoint_data(FILE *file, event *e);
-
-/*function count the number of lines in a file*/
-int count_lines(FILE *file);
-
 #ifdef	__cplusplus
 }
 #endif
