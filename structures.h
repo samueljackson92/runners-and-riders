@@ -65,7 +65,7 @@ enum entrant_status {
 
 /*Structure to hold information about data for a checkpoint update*/
 typedef struct checkpoint_data {
-    int competitor;
+    int competitor_num;
     int node;
     char type;
     char time[TIME_STRING_SIZE];

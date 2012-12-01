@@ -85,29 +85,29 @@ int main(int argc, char** argv) {
 }
 
 void query_competitor(Linked_List entrantlist) {
-    int id;
-    Track *t;
+    int entrant_id;
+    Track *track;
     Entrant *entrant;
-    char buff[OUTPUT_BUFF];
+    char status_buff[OUTPUT_BUFF];
     
     printf("Enter id for the competitor:\n");
-    scanf("%d", &id);
+    scanf("%d", &entrant_id);
     
     clear_screen();
     
-    entrant = find_entrant(entrantlist, id);
-    convert_type_status(entrant->state.type, buff);
+    entrant = find_entrant(entrantlist, entrant_id);
+    convert_type_status(entrant->state.type, status_buff);
     
-    printf("COMPETITOR %d:\n", id);
+    printf("COMPETITOR %d:\n", entrant_id);
     printf("Name: %s\n", entrant->name);
-    printf("Status: %s\n", buff);
+    printf("Status: %s\n", status_buff);
     
     switch(entrant->state.type) {
         case ON_TRACK:
-            t = (Track *) entrant->current_track->data;
+            track = (Track *) entrant->current_track->data;
             printf("Last recorded time: %s\n", entrant->cp_data.time);
             printf("Location Reference: %d\n", entrant->state.location_ref);
-            printf("Presumed on track between node %d and node %d\n", t->nodea, t->nodeb);
+            printf("Presumed on track between node %d and node %d\n", track->nodea, track->nodeb);
             break;
         default:
             printf("Currently at node: %d\n", entrant->state.location_ref);
@@ -133,27 +133,27 @@ int check_num_competitors(Linked_List entrantlist, enum entrant_status type) {
 }
 
 void manually_read_data(Event *evt) {
-    CP_Data data;
+    CP_Data checkpoint_data;
     
     printf("Enter the type of check point (T/I/A/D/E):\n");
-    scanf(" %[TIADE]c", &data.type);
+    scanf(" %[TIADE]c", &checkpoint_data.type);
     
     printf("Enter the competitor number:\n");
-    scanf(" %d", &data.competitor);
+    scanf(" %d", &checkpoint_data.competitor_num);
     
     printf("Enter the check point number:\n");
-    scanf(" %d", &data.node);
+    scanf(" %d", &checkpoint_data.node);
     
     printf("Enter the time recorded:\n");
-    scanf(" %[0-9:]s", data.time);
+    scanf(" %[0-9:]s", checkpoint_data.time);
 
-    add_new_time(evt, data);
-    update_others(evt, data);
+    add_new_time(evt, checkpoint_data);
+    update_others(evt, checkpoint_data);
 }
 
 void read_updates(Event *e) {
     char filename[MAX_FILEPATH_LENGTH];
-    CP_Data data;
+    CP_Data checkpoint_data;
     
     printf("Enter name of the checkpoint files:\n");
     scanf(" %s", filename);
@@ -161,13 +161,13 @@ void read_updates(Event *e) {
     FILE *file = fopen(filename, "r");
     
     while (!feof(file)){
-        fscanf(file, "%c %d %d %5[0-9:]s", &data.type, &data.node, 
-                &data.competitor, data.time);
-        add_new_time(e, data);
+        fscanf(file, "%c %d %d %5[0-9:]s", &checkpoint_data.type, &checkpoint_data.node, 
+                &checkpoint_data.competitor_num, checkpoint_data.time);
+        add_new_time(e, checkpoint_data);
     }
     
     fclose(file);
-    update_others(e, data);
+    update_others(e, checkpoint_data);
 }
 
 void print_entrant(void *data) {

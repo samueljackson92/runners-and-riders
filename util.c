@@ -9,54 +9,54 @@
 #include <string.h>
 #include "util.h"
 
-void add_new_time(Event *evt, CP_Data data){
-    Entrant *entrant = find_entrant(evt->entrantlist, data.competitor);
+void add_new_time(Event *evt, CP_Data checkpoint_data){
+    Entrant *entrant = find_entrant(evt->entrantlist, checkpoint_data.competitor_num);
     Course *course = find_course(evt->courselist, entrant->course);
     int hours, mins;
     
-    switch(data.type) {
+    switch(checkpoint_data.type) {
         /*regular time update*/
         case 'T':
             if(entrant->state.type == NOT_STARTED){
-                strcpy(entrant->start_time, data.time);
+                strcpy(entrant->start_time, checkpoint_data.time);
             }
             
             entrant->state.type = TIME_CHECKPOINT;
             
-            while(course->nodes[entrant->state.nodes_visited] != data.node) {
+            while(course->nodes[entrant->state.nodes_visited] != checkpoint_data.node) {
                 entrant->state.nodes_visited++;
             }
             
-            entrant->state.location_ref = data.node; 
+            entrant->state.location_ref = checkpoint_data.node; 
             
             if(entrant->state.nodes_visited == course->path_size-1) {
                 entrant->state.type = COMPLETED;
-                strcpy(entrant->end_time, data.time);
+                strcpy(entrant->end_time, checkpoint_data.time);
             }
             
             break;
         /* Excluded at checkpoint for taking wrong direction */
         case 'I':
             entrant->state.type = EXCLUDED_IR;
-            entrant->state.location_ref = data.node;
+            entrant->state.location_ref = checkpoint_data.node;
             break;
         /* Arrived at medical checkpoint */
         case 'A':
             entrant->state.type = MC_CHECKPOINT;
             
-            while(course->nodes[entrant->state.nodes_visited] != data.node) {
+            while(course->nodes[entrant->state.nodes_visited] != checkpoint_data.node) {
                 entrant->state.nodes_visited++;
             }
             
-            entrant->state.location_ref = data.node;
-            strcpy(entrant->mc_time_stopped, data.time);
+            entrant->state.location_ref = checkpoint_data.node;
+            strcpy(entrant->mc_time_stopped, checkpoint_data.time);
             break;
         /* Departed from medical checkpoint */
         case 'D':
             entrant->state.type = ON_TRACK;
             
-            hours = calc_time_diff(entrant->mc_time_stopped, data.time);
-            mins = calc_time_diff(&entrant->mc_time_stopped[3], &data.time[3]);
+            hours = calc_time_diff(entrant->mc_time_stopped, checkpoint_data.time);
+            mins = calc_time_diff(&entrant->mc_time_stopped[3], &checkpoint_data.time[3]);
             
             entrant->mc_time_delay_hours += hours;
             entrant->mc_time_delay_mins += mins;
@@ -64,11 +64,11 @@ void add_new_time(Event *evt, CP_Data data){
         /* Excluded for failing medical checkpoint */
         case 'E':
             entrant->state.type = EXCLUDED_MC;
-            entrant->state.location_ref = data.node;
+            entrant->state.location_ref = checkpoint_data.node;
             break;
     }
  
-    entrant->cp_data = data;
+    entrant->cp_data = checkpoint_data;
 }
 
 void update_others(Event *evt, CP_Data data){
@@ -85,7 +85,7 @@ void update_others(Event *evt, CP_Data data){
         status = entrant->state.type;
         
         /*set others to be on track and update there position*/
-        if((status == TIME_CHECKPOINT && data.competitor != entrant->number) || status == ON_TRACK) {
+        if((status == TIME_CHECKPOINT && data.competitor_num != entrant->number) || status == ON_TRACK) {
             
             if(status == TIME_CHECKPOINT) {
                 /*get next checkpoint*/
