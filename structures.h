@@ -15,13 +15,13 @@ extern "C" {
 #include "linked_list.h"
     
 /*Macro defining the maximum size of an event name.*/
-#define MAX_EVENT_NAME_SIZE 51
+#define MAX_EVENT_NAME_SIZE 80
     
 /*Macro defining the maximum size of an entrant name.*/
 #define MAX_ENTRANT_NAME_SIZE 51
 
 /*Maximum size of a textual date string (e.g. 12th June 2012)*/
-#define MAX_DATE_SIZE 21
+#define MAX_DATE_SIZE 80
     
 /*Maximum size of time string (e.g. 09:00)*/
 #define TIME_STRING_SIZE 6

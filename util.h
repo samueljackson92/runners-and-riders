@@ -26,6 +26,9 @@ void add_new_time(Event *e, CP_Data data);
 /*Update the other competitors in the competition relative to the last update*/
 void update_others(Event *evt, CP_Data data);
 
+/*Update the position on an entrant currently out on a track*/
+void update_entrant_on_track(Event * evt, Entrant * entrant, CP_Data data);
+
 /*Convert a given entrant status into a user readable string*/
 void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]);
 

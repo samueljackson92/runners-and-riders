@@ -71,13 +71,10 @@ void add_new_time(Event *evt, CP_Data checkpoint_data){
     entrant->cp_data = checkpoint_data;
 }
 
-void update_others(Event *evt, CP_Data data){
+void update_others(Event *evt, CP_Data checkpoint_data){
     List_Node *current_entrant = evt->entrantlist.head;
-    Track *track = NULL;
     Entrant *entrant = NULL;
     enum entrant_status status;
-    int check_time, current_time, 
-            track_total, hit_cp = 0;
     
     /*Loop through each entrant in the competition*/
     while(current_entrant->next != NULL) {
@@ -85,43 +82,50 @@ void update_others(Event *evt, CP_Data data){
         status = entrant->state.type;
         
         /*set others to be on track and update there position*/
-        if((status == TIME_CHECKPOINT && data.competitor_num != entrant->number) || status == ON_TRACK) {
-            
-            if(status == TIME_CHECKPOINT) {
-                /*get next checkpoint*/
-                entrant->state.next_cp = find_next_checkpoint(evt->nodelist, entrant);
-            }
-
-            track  = (Track *) entrant->current_track->data;
-
-            check_time = convert_time_to_mins(entrant->cp_data.time);  /*time at last checkpoint*/
-            current_time = convert_time_to_mins(data.time);            /*current time*/
-            track_total = track->time;                                 /*time it should take on track*/
-
-            /*Estimate how far between checkpoints an entrant is.*/
-            /*fast forward the entrant along the course if applicable*/
-            while(!hit_cp && track_total < current_time - check_time) {
-
-                track = (Track*) entrant->current_track->data;
-
-                /* if we should have reached a checkpoint, but are late*/
-                if(track->nodea == entrant->state.next_cp || 
-                        track->nodeb == entrant->state.next_cp){
-                    hit_cp = 1;
-                } else {
-                    /*if we should not have reached a checkpoint move forward on the track*/
-                    entrant->current_track = entrant->current_track->next;
-                    track = (Track*) entrant->current_track->data;
-                }
-
-                /* accumulate the estimated time travelled along the track*/
-                track_total += track->time;
-            }
-            entrant->state.type = ON_TRACK;
-            entrant->state.location_ref = track->number;
+        if((status == TIME_CHECKPOINT && checkpoint_data.competitor_num != entrant->number) || status == ON_TRACK) {
+            update_entrant_on_track(evt, entrant, checkpoint_data);
         }
+        
         current_entrant = current_entrant->next;
     }
+}
+
+void update_entrant_on_track(Event *evt, Entrant *entrant, CP_Data checkpoint_data) {
+    int check_time, current_time, 
+        track_total, hit_cp = 0;
+    
+    Track *track = (Track *) entrant->current_track->data;
+    
+    if(entrant->state.type == TIME_CHECKPOINT) {
+        /*get next checkpoint*/
+        entrant->state.next_cp = find_next_checkpoint(evt->nodelist, entrant);
+    }
+
+    check_time = convert_time_to_mins(entrant->cp_data.time);  /*time at last checkpoint*/
+    current_time = convert_time_to_mins(checkpoint_data.time);            /*current time*/
+    track_total = track->time;                                 /*time it should take on track*/
+
+    /*Estimate how far between checkpoints an entrant is.*/
+    /*fast forward the entrant along the course if applicable*/
+    while(!hit_cp && track_total < current_time - check_time) {
+
+        track = (Track*) entrant->current_track->data;
+
+        /* if we should have reached a checkpoint, but are late*/
+        if(track->nodea == entrant->state.next_cp || 
+                track->nodeb == entrant->state.next_cp){
+            hit_cp = 1;
+        } else {
+            /*if we should not have reached a checkpoint move forward on the track*/
+            entrant->current_track = entrant->current_track->next;
+            track = (Track*) entrant->current_track->data;
+        }
+
+        /* accumulate the estimated time travelled along the track*/
+        track_total += track->time;
+    }
+    entrant->state.type = ON_TRACK;
+    entrant->state.location_ref = track->number;
 }
 
 Track * find_track(Linked_List list, int node_a, int node_b) {
