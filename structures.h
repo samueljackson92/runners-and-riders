@@ -28,7 +28,7 @@ extern "C" {
     
 /*enum to signify what type of checkpoint a node is*/
 enum check_point {
-    CP, JN, MC
+    CP, JN
 };
 
 /*structure to hold information about a node and a pointer to the next node*/
@@ -55,19 +55,16 @@ typedef struct course_s {
 /*enum to signify what the current status of an entrant is*/
 enum entrant_status {
     NOT_STARTED,
-    MC_CHECKPOINT,
     ON_TRACK,
     TIME_CHECKPOINT,
     COMPLETED,
-    EXCLUDED_MC,
-    EXCLUDED_IR
 };
 
 /*Structure to hold information about data for a checkpoint update*/
 typedef struct checkpoint_data {
     int competitor_num;
     int node;
-    char type; /*type of update T/A/D/I/E*/
+    char type; /*type of update currently just T*/
     char time[TIME_STRING_SIZE];
 } CP_Data;
 
@@ -88,8 +85,6 @@ typedef struct entrant_s {
     char name[MAX_ENTRANT_NAME_SIZE];
     int start_time;
     int end_time;
-    int mc_time_stopped; /*time entrant arrived at a MC*/
-    int mc_time_delay;/*cumulative delays occurred at MCs*/
     status_struct state; /*detailed state of the entrant*/
     list_node *current_track;
 } entrant;

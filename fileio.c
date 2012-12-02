@@ -169,8 +169,7 @@ void read_entrants(FILE *file, event *e) {
             entrant_data->state.location_ref = 0;
             entrant_data->state.type = NOT_STARTED;
             entrant_data->state.late = 0;
-            entrant_data->mc_time_delay = 0;
-            
+
             new_element->data = entrant_data;
             new_element->next = NULL;
             add_element(&e->entrantlist, new_element);

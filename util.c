@@ -92,9 +92,6 @@ void convert_type_status_verbose(enum entrant_status type, char buffer[OUTPUT_BU
         case NOT_STARTED:
             strcpy(buffer, "Not yet started.");
             break;
-        case MC_CHECKPOINT:
-            strcpy(buffer, "At medical checkpoint.");
-            break;
         case ON_TRACK:
             strcpy(buffer, "Out on track.");
             break;
@@ -103,12 +100,6 @@ void convert_type_status_verbose(enum entrant_status type, char buffer[OUTPUT_BU
             break;
         case COMPLETED:
             strcpy(buffer, "Completed course.");
-            break;
-        case EXCLUDED_MC:
-            strcpy(buffer, "Excluded at medical checkpoint.");
-            break;
-        case EXCLUDED_IR:
-            strcpy(buffer, "Excluded at incorrect checkpoint.");
             break;
     }
 }
@@ -119,9 +110,6 @@ void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]) {
         case NOT_STARTED:
             strcpy(buffer, "NOT STARTED");
             break;
-        case MC_CHECKPOINT:
-            strcpy(buffer, "AT MC");
-            break;
         case ON_TRACK:
             strcpy(buffer, "ON TRACK");
             break;
@@ -130,12 +118,6 @@ void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]) {
             break;
         case COMPLETED:
             strcpy(buffer,"COMPLETED");
-            break;
-        case EXCLUDED_MC:
-            strcpy(buffer,"EXCLUDED MC");
-            break;
-        case EXCLUDED_IR:
-            strcpy(buffer,"EXCLUDED IR");
             break;
     }
 }

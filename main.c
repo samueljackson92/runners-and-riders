@@ -229,7 +229,7 @@ void print_entrant(void *data) {
                 hours, mins);
             
     } else {
-        printf("|%-21s|    %c     |%-16s|    %s    |       N/a      |       N/a      |\n", 
+        printf("|%-21s|    %c     |%-16s|    %s    |     N/a     |       N/a      |\n", 
                 entrant_data->name, entrant_data->course, 
                 status_buff, start_time);
     }
