@@ -161,8 +161,7 @@ int check_num_competitors(linked_list entrantlist, enum entrant_status type) {
 void manually_read_data(event *evt) {
     CP_Data checkpoint_data;
     
-    printf("Enter the type of check point (T|I|A|D|E):\n");
-    scanf(" %[TIADE]c", &checkpoint_data.type);
+    checkpoint_data.type = 'T';
     
     printf("Enter the competitor number:\n");
     scanf(" %d", &checkpoint_data.competitor_num);
@@ -205,12 +204,10 @@ void print_entrant(void *data) {
     entrant *entrant_data = (entrant*) data;
     int total_time_mins = 0;
     int hours = 0, mins = 0;
-    int delay_hours, delay_mins;
     
     char status_buff[OUTPUT_BUFF];
     char start_time[TIME_STRING_SIZE];
     char end_time[TIME_STRING_SIZE];
-    char delay_time[TIME_STRING_SIZE];
         
     convert_mins_to_time(entrant_data->start_time, start_time);
     convert_type_status(entrant_data->state.type, status_buff);
@@ -219,27 +216,20 @@ void print_entrant(void *data) {
     if(entrant_data->state.type == COMPLETED) {
         
         total_time_mins = entrant_data->end_time - entrant_data->start_time;
-        total_time_mins -= entrant_data->mc_time_delay;
 
         hours = total_time_mins /60;
         mins = total_time_mins %60;
-        
-        delay_hours = entrant_data->mc_time_delay /60;
-        delay_mins = entrant_data->mc_time_delay %60;
 
         convert_mins_to_time(entrant_data->end_time, end_time);
-        convert_mins_to_time(entrant_data->mc_time_delay, delay_time);
 
-
-        printf("|%-21s|    %c     |%-16s|    %s    |    %s    |  %.2dhrs %.2dmins  |  %.2dhrs %.2dmins  |\n", 
+        printf("|%-21s|    %c     |%-16s|    %s    |    %s    |  %.2dhrs %.2dmins  |\n", 
                 entrant_data->name, entrant_data->course, 
                 status_buff, 
                 start_time, end_time, 
-                delay_hours, delay_mins,
                 hours, mins);
             
     } else {
-        printf("|%-21s|    %c     |%-16s|    %s    |     N/a     |       N/a      |       N/a      |\n", 
+        printf("|%-21s|    %c     |%-16s|    %s    |       N/a      |       N/a      |\n", 
                 entrant_data->name, entrant_data->course, 
                 status_buff, start_time);
     }
@@ -247,43 +237,13 @@ void print_entrant(void *data) {
 
 /* Print each entrants results along with the table header/footer. */
 void print_results(linked_list entrantlist){
-    printf("-----------------------------------------------------------------------------------------------------------------\n");
-    printf("|Competitor           |  Course  |     Status     |  Start Time |   End Time  |    MC Delay    |     Total      |\n");
-    printf("|---------------------------------------------------------------------------------------------------------------|\n");
+    printf("------------------------------------------------------------------------------------------------\n");
+    printf("|Competitor           |  Course  |     Status     |  Start Time |   End Time  |     Total      |\n");
+    printf("|----------------------------------------------------------------------------------------------|\n");
     
     traverse_list(entrantlist.head, &print_entrant);
     
-    printf("-----------------------------------------------------------------------------------------------------------------\n");
-}
-
-/* Print a table of entrant which have been excluded from the event. */
-void print_entrants_excluded(linked_list entrantlist, enum entrant_status type) {    
-    list_node *current = entrantlist.head;
-    entrant *entrant_data;
-    
-    /* check what type of exclusion we're dealing with */
-    if(type == EXCLUDED_MC) {
-        printf("Competitors Excluded from Medical Checkpoints\n");
-    } else {
-        printf("Competitors Excluded from Regular Checkpoints\n");
-    }
-    
-    /*output table header*/
-    printf("------------------------------------------\n");
-    printf("|Competitor           |  Node  |  Time   |\n");
-    printf("|----------------------------------------|\n");
-    
-    /* For each entrant, if they are excluded, print them*/
-    while (current->next != NULL) {
-        entrant_data = (entrant*) current->data;
-        if(entrant_data->state.type == type) {
-            printf("|%-21s|   %.2d   |  %s  |\n", entrant_data->name, 
-                entrant_data->state.location_ref, entrant_data->state.current_cp_data.time);
-        }
-        current = current->next;
-    }
-    
-    printf("------------------------------------------\n");
+    printf("------------------------------------------------------------------------------------------------\n");
 }
 
 /* Add a new checkpoint time update to the system. */
@@ -330,35 +290,6 @@ void add_new_time(event *evt, CP_Data checkpoint_data){
                 }
             }
             
-            break;
-        /* Excluded at checkpoint for taking wrong direction */
-        case 'I':
-            entrant_data->state.type = EXCLUDED_IR;
-            entrant_data->state.location_ref = checkpoint_data.node;
-            break;
-        /* Arrived at medical checkpoint */
-        case 'A':
-            entrant_data->state.type = MC_CHECKPOINT;
-            
-            /* update the number of nodes this competitor has visited */
-            while(course_data->nodes[entrant_data->state.nodes_visited] != checkpoint_data.node) {
-                entrant_data->state.nodes_visited++;
-            }
-            
-            entrant_data->state.location_ref = checkpoint_data.node;
-            
-            /* record the time they reached the MC for delay calculations*/
-            entrant_data->mc_time_stopped = convert_time_to_mins(checkpoint_data.time);
-            break;
-        /* Departed from medical checkpoint */
-        case 'D':
-            /* calculate the time spent a the checkpoint and record the delay accordingly*/
-            entrant_data->mc_time_delay += convert_time_to_mins(checkpoint_data.time) - entrant_data->mc_time_stopped;
-            break;
-        /* Excluded for failing medical checkpoint */
-        case 'E':
-            entrant_data->state.type = EXCLUDED_MC;
-            entrant_data->state.location_ref = checkpoint_data.node;
             break;
     }
  
