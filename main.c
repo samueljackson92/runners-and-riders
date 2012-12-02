@@ -52,9 +52,7 @@ int main(int argc, char** argv) {
                 "5  - Check how many competitors have finished\n"
                 "6  - Manually update a competitor\n"
                 "7  - Read in a file of updates\n"
-                "8  - Print table of results\n"
-                "9  - Print entrants excluded at medical checkpoints\n"
-                "10 - Print entrants excluded at regular checkpoints\n");
+                "8  - Print table of results\n");
         
         scanf(" %d", &option);
         clear_screen();
@@ -86,12 +84,6 @@ int main(int argc, char** argv) {
                 break;
             case 8: /* Print out a table of results */
                 print_results(evt.entrantlist);
-                break;
-            case 9: /* Print a table of entrants who have been excluded at medical checkpoints*/
-                print_entrants_excluded(evt.entrantlist, EXCLUDED_MC);
-                break;
-            case 10: /* Print a table of entrants who have been excluded for getting lost */
-                print_entrants_excluded(evt.entrantlist, EXCLUDED_IR);
                 break;
         }
     } while (option != 0);
