@@ -8,6 +8,7 @@
  * Created on 29 November 2012, 21:27
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "util.h"
@@ -36,7 +37,7 @@ entrant * find_entrant(linked_list list, int id) {
     entrant *entrant_data = NULL;
     int found = 0;
     
-    while(!found && current->next != NULL) {
+    while(!found && current != NULL) {
         entrant_data = (entrant*) current->data;
         if(entrant_data->number == id) {
             found = 1;
@@ -112,6 +113,7 @@ void convert_type_status_verbose(enum entrant_status type, char buffer[OUTPUT_BU
     }
 }
 
+/*Convert the status of an entrant in to a string.*/
 void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]) {
     switch(type) {
         case NOT_STARTED:
@@ -169,16 +171,4 @@ void convert_mins_to_time(int total_mins, char buff[TIME_STRING_SIZE]){
     strcpy(buff, h);
     strcat(buff, ":");
     strcat(buff, m);
-}
-
-/* Calculate the different between the hours or minutes of a formatted string*/
-int calc_time_diff (char *start, char *end) {
-    int start_t, end_t, total;
-
-    start_t  = atoi(start);
-    end_t  = atoi(end);
-   
-    total = end_t - start_t;
-    
-    return total;  
 }

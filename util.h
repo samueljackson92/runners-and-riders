@@ -23,14 +23,17 @@ extern "C" {
 /*Convert a given entrant status into a user readable string*/
 void convert_type_status_verbose(enum entrant_status type, char buffer[OUTPUT_BUFF]);
 
+/*Convert a given entrant status into a string*/
+void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]);
+
 /*Convert the given checkpoint string into an enum format*/
 enum check_point convert_node_type(char type_string[3]);
 
 /*Convert a given time string into an integer representing the minutes since midnight*/
 int convert_time_to_mins(char time[TIME_STRING_SIZE]);
 
-/*Covert textual mins or hours into integers and return their difference*/
-int calc_time_diff (char *start, char *end);
+/* Convert mins into a formatted time string */
+void convert_mins_to_time(int mins, char time[TIME_STRING_SIZE]);
 
 /*Find a track given by comparing if it consists of the two given nodes*/
 track * find_track(linked_list list, int node_a, int node_b);

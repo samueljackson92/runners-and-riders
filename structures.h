@@ -106,7 +106,6 @@ typedef struct event_s {
     linked_list tracklist;
     linked_list courselist;
     linked_list entrantlist;
-    linked_list cp_data_buff;
 } event;
 
 #ifdef	__cplusplus

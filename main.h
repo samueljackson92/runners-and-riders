@@ -22,6 +22,9 @@ extern "C" {
 /*macro to clear the command line*/
 #define clear_screen() if(system("clear")){ system("cls"); }
 
+/*Print out details about the current event*/
+void print_event_data(event *evt);
+
 /*Query the current status of a competitor in this event*/
 void query_competitor(linked_list eventlist);
 

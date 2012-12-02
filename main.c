@@ -18,7 +18,7 @@
 #include "util.h"
 
 int main(int argc, char** argv) {
-    event event;
+    event evt;
     int option, result;
     
     printf("|==============================================|\n");
@@ -30,69 +30,80 @@ int main(int argc, char** argv) {
     printf("\nLoading data files...\n");
     
     /*init all linked lists to NULL for safety*/
-    event.courselist.head = NULL;
-    event.courselist.tail = NULL;
-    event.entrantlist.head = NULL;
-    event.entrantlist.tail = NULL;
-    event.nodelist.head = NULL;
-    event.nodelist.tail = NULL;
-    event.tracklist.head = NULL;
-    event.tracklist.tail = NULL;
+    evt.courselist.head = NULL;
+    evt.courselist.tail = NULL;
+    evt.entrantlist.head = NULL;
+    evt.entrantlist.tail = NULL;
+    evt.nodelist.head = NULL;
+    evt.nodelist.tail = NULL;
+    evt.tracklist.head = NULL;
+    evt.tracklist.tail = NULL;
     
-    read_file_data(&event); /*read data files*/
+    read_file_data(&evt); /*read data files*/
     
     /*begin main menu*/
     do {
         printf("Enter an Option:\n"
-                "0 - Exit\n"
-                "1 - Query Competitor\n"
-                "2 - Check how many competitors not yet started\n"
-                "3 - Check how many competitors are out on courses\n"
-                "4 - Check how many competitors have finished\n"
-                "5 - Manually update a competitor\n"
-                "6 - Read in a file of updates\n"
-                "7 - Print table of results\n"
-                "8 - Print entrants excluded at medical checkpoints\n"
-                "9 - Print entrants excluded at regular checkpoints\n");
+                "0  - Exit\n"
+                "1  - Event Details\n"
+                "2  - Query Competitor\n"
+                "3  - Check how many competitors not yet started\n"
+                "4  - Check how many competitors are out on courses\n"
+                "5  - Check how many competitors have finished\n"
+                "6  - Manually update a competitor\n"
+                "7  - Read in a file of updates\n"
+                "8  - Print table of results\n"
+                "9  - Print entrants excluded at medical checkpoints\n"
+                "10 - Print entrants excluded at regular checkpoints\n");
         
         scanf(" %d", &option);
         clear_screen();
         
         switch(option) {
-            case 1: /*query a competitor based on there id*/
-                query_competitor(event.entrantlist);
+            case 1:
+                print_event_data(&evt);
                 break;
-            case 2: /* Check the number of competitors not yet started*/
-                result = check_num_competitors(event.entrantlist, NOT_STARTED);
+            case 2: /*query a competitor based on there id*/
+                query_competitor(evt.entrantlist);
+                break;
+            case 3: /* Check the number of competitors not yet started*/
+                result = check_num_competitors(evt.entrantlist, NOT_STARTED);
                 printf("%d competitors have not yet started\n", result);
                 break;
-            case 3: /* Check the number of competitors currently out on tracks */
-                result = check_num_competitors(event.entrantlist, ON_TRACK);
+            case 4: /* Check the number of competitors currently out on tracks */
+                result = check_num_competitors(evt.entrantlist, ON_TRACK);
                 printf("%d competitors are out on a course\n", result);
                 break;
-            case 4: /* Check the number of competitors who have completed the course*/
-                result = check_num_competitors(event.entrantlist, COMPLETED);
+            case 5: /* Check the number of competitors who have completed the course*/
+                result = check_num_competitors(evt.entrantlist, COMPLETED);
                 printf("%d competitors have completed their course\n", result);
                 break;
-            case 5: /* Manually enter a time checkpoint update */
-                manually_read_data(&event);
+            case 6: /* Manually enter a time checkpoint update */
+                manually_read_data(&evt);
                 break;
-            case 6: /* Read a file of time checkpoint updates */
-                read_updates(&event);
+            case 7: /* Read a file of time checkpoint updates */
+                read_updates(&evt);
                 break;
-            case 7: /* Print out a table of results */
-                print_results(event.entrantlist);
+            case 8: /* Print out a table of results */
+                print_results(evt.entrantlist);
                 break;
-            case 8: /* Print a table of entrants who have been excluded at medical checkpoints*/
-                print_entrants_excluded(event.entrantlist, EXCLUDED_MC);
+            case 9: /* Print a table of entrants who have been excluded at medical checkpoints*/
+                print_entrants_excluded(evt.entrantlist, EXCLUDED_MC);
                 break;
-            case 9: /* Print a table of entrants who have been excluded for getting lost */
-                print_entrants_excluded(event.entrantlist, EXCLUDED_IR);
+            case 10: /* Print a table of entrants who have been excluded for getting lost */
+                print_entrants_excluded(evt.entrantlist, EXCLUDED_IR);
                 break;
         }
     } while (option != 0);
     
     return (EXIT_SUCCESS);
+}
+
+/*Print out the details about this event.*/
+void print_event_data(event *evt) {
+    printf("%s\n", evt->name);
+    printf("%s\n", evt->date);
+    printf("Start Time: %s\n", evt->start_time);
 }
 
 /* Query a competitor by supplying a competitor ID */
@@ -143,11 +154,10 @@ int check_num_competitors(linked_list entrantlist, enum entrant_status type) {
     /* loop through each entrant and check their state.
      * Display if equal.
      */
-    while (current->next != NULL) {
+    while (current != NULL) {
         entrant_data = (entrant*) current->data;
         if (entrant_data->state.type == type) {
             count++;
-            printf("%s\n", entrant_data->name);
         }
         current = current->next;
     }
@@ -370,7 +380,7 @@ void update_others(event *evt, CP_Data checkpoint_data){
     enum entrant_status status;
     
     /*Loop through each entrant in the competition*/
-    while(current_entrant->next != NULL) {
+    while(current_entrant != NULL) {
         entrant_data = (entrant*) current_entrant->data;
         status = entrant_data->state.type;
         

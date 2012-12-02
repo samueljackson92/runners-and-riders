@@ -21,25 +21,25 @@
 void read_file_data(event *e){
     char filename[MAX_FILEPATH_LENGTH];
 
-    /*printf("Enter location and name of event details file:\n");
-    scanf(" %100s", filename);*/
-    read_file("event_3/name.txt", &read_event_details, e);
+    printf("Enter location and name of event details file:\n");
+    scanf(" %100s", filename);
+    read_file(filename, &read_event_details, e);
     
-   /* printf("Enter location and name of the nodes file:\n");
-    scanf(" %100s", filename);*/
-    read_file("event_3/nodes.txt", &read_nodes, e);
+    printf("Enter location and name of the nodes file:\n");
+    scanf(" %100s", filename);
+    read_file(filename, &read_nodes, e);
     
-    /*printf("Enter location and name of the tracks file:\n");
-    scanf(" %100s", filename);*/
-    read_file("event_3/tracks.txt", &read_tracks, e);
+    printf("Enter location and name of the tracks file:\n");
+    scanf(" %100s", filename);
+    read_file(filename, &read_tracks, e);
     
-    /*printf("Enter location and name of the courses file:\n");
-    scanf(" %100s", filename);*/
-    read_file("event_3/courses.txt", &read_courses, e);
+    printf("Enter location and name of the courses file:\n");
+    scanf(" %100s", filename);
+    read_file(filename, &read_courses, e);
     
-   /* printf("Enter location and name of the entrants file:\n");
-    scanf(" %100s", filename);*/
-    read_file("event_3/entrants.txt", &read_entrants, e);
+    printf("Enter location and name of the entrants file:\n");
+    scanf(" %100s", filename);
+    read_file(filename, &read_entrants, e);
     
 }
 
