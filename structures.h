@@ -25,7 +25,7 @@ extern "C" {
     
 /*Maximum size of time string (e.g. 09:00)*/
 #define TIME_STRING_SIZE 6
-
+    
 /*enum to signify what type of checkpoint a node is*/
 enum check_point {
     CP, JN, MC
@@ -86,10 +86,10 @@ typedef struct entrant_s {
     int number; /*competitor number*/
     char course;
     char name[MAX_ENTRANT_NAME_SIZE];
-    char start_time[TIME_STRING_SIZE];
-    char end_time[TIME_STRING_SIZE];
-    char mc_time_stopped[TIME_STRING_SIZE]; /*time entrant arrived at a MC*/
-    int mc_time_delay_hours, mc_time_delay_mins; /*cumulative delays occurred at MCs*/
+    int start_time;
+    int end_time;
+    int mc_time_stopped; /*time entrant arrived at a MC*/
+    int mc_time_delay;/*cumulative delays occurred at MCs*/
     status_struct state; /*detailed state of the entrant*/
     list_node *current_track;
 } entrant;

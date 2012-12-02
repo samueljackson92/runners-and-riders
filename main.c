@@ -21,11 +21,11 @@ int main(int argc, char** argv) {
     event event;
     int option, result;
     
-    printf("|==========================|\n");
-    printf("|----RUNNERS AND RIDERS----|\n");
-    printf("|--------------------------|\n");
-    printf("|Event tracking application|\n");
-    printf("|==========================|\n");
+    printf("|==============================================|\n");
+    printf("|--------------RUNNERS AND RIDERS--------------|\n");
+    printf("|----------------------------------------------|\n");
+    printf("|----------Event tracking application----------|\n");
+    printf("|==============================================|\n");
     
     printf("\nLoading data files...\n");
     
@@ -109,7 +109,7 @@ void query_competitor(linked_list entrantlist) {
     clear_screen();
     
     entrant = find_entrant(entrantlist, entrant_id);
-    convert_type_status(entrant->state.type, status_buff);
+    convert_type_status_verbose(entrant->state.type, status_buff);
     
     /*output the current status of a competitor */
     
@@ -201,34 +201,57 @@ void read_updates(event *e) {
 /* Function defines how to print an entrant in a format that fits the results table. */
 void print_entrant(void *data) {
     entrant *entrant_data = (entrant*) data;
-    int total_hours = 0;
-    int total_mins = 0;
+    int total_time_mins = 0;
+    int hours = 0, mins = 0;
+    int delay_hours, delay_mins;
+    
+    char status_buff[OUTPUT_BUFF];
+    char start_time[TIME_STRING_SIZE];
+    char end_time[TIME_STRING_SIZE];
+    char delay_time[TIME_STRING_SIZE];
         
+    convert_mins_to_time(entrant_data->start_time, start_time);
+    convert_type_status(entrant_data->state.type, status_buff);
+    
    /* Check whether the entrant has completed the course yet. If so then calculate their finish time. */
     if(entrant_data->state.type == COMPLETED) {
-            total_hours = calc_time_diff(entrant_data->start_time, entrant_data->end_time);
-            total_mins = calc_time_diff(&entrant_data->start_time[3], &entrant_data->start_time[3]);
+        
+        total_time_mins = entrant_data->end_time - entrant_data->start_time;
+        total_time_mins -= entrant_data->mc_time_delay;
 
-            total_hours -= entrant_data->mc_time_delay_hours;
-            total_mins -= entrant_data->mc_time_delay_mins;
+        hours = total_time_mins /60;
+        mins = total_time_mins %60;
+        
+        delay_hours = entrant_data->mc_time_delay /60;
+        delay_mins = entrant_data->mc_time_delay %60;
+
+        convert_mins_to_time(entrant_data->end_time, end_time);
+        convert_mins_to_time(entrant_data->mc_time_delay, delay_time);
+
+
+        printf("|%-21s|    %c     |%-16s|    %s    |    %s    |  %.2dhrs %.2dmins  |  %.2dhrs %.2dmins  |\n", 
+                entrant_data->name, entrant_data->course, 
+                status_buff, 
+                start_time, end_time, 
+                delay_hours, delay_mins,
+                hours, mins);
+            
+    } else {
+        printf("|%-21s|    %c     |%-16s|    %s    |     N/a     |       N/a      |       N/a      |\n", 
+                entrant_data->name, entrant_data->course, 
+                status_buff, start_time);
     }
-
-    /* Print the entrant in a formatted way.*/
-    printf("|%-21s|    %c     |    %s    |    %s    |  %.2dhrs %.2dmins  |\n", 
-            entrant_data->name, entrant_data->course, 
-            entrant_data->start_time, entrant_data->end_time, 
-            total_hours, total_mins);
 }
 
 /* Print each entrants results along with the table header/footer. */
 void print_results(linked_list entrantlist){
-    printf("-------------------------------------------------------------------------------\n");
-    printf("|Competitor           |  Course  |  Start Time |   End Time  |     Total      |\n");
-    printf("|-----------------------------------------------------------------------------|\n");
+    printf("-----------------------------------------------------------------------------------------------------------------\n");
+    printf("|Competitor           |  Course  |     Status     |  Start Time |   End Time  |    MC Delay    |     Total      |\n");
+    printf("|---------------------------------------------------------------------------------------------------------------|\n");
     
     traverse_list(entrantlist.head, &print_entrant);
     
-    printf("-------------------------------------------------------------------------------\n");
+    printf("-----------------------------------------------------------------------------------------------------------------\n");
 }
 
 /* Print a table of entrant which have been excluded from the event. */
@@ -266,7 +289,7 @@ void add_new_time(event *evt, CP_Data checkpoint_data){
     track *current_track;
     entrant *entrant_data = find_entrant(evt->entrantlist, checkpoint_data.competitor_num);
     course *course_data = find_course(evt->courselist, entrant_data->course);
-    int hours, mins, found = 0;
+    int found = 0;
     
     /* Select what time of checkpoint we're dealing with. */
     switch(checkpoint_data.type) {
@@ -274,7 +297,7 @@ void add_new_time(event *evt, CP_Data checkpoint_data){
         case 'T':
             /* if this is the first updated, set their start time. */
             if(entrant_data->state.type == NOT_STARTED){
-                strcpy(entrant_data->start_time, checkpoint_data.time);
+                entrant_data->start_time = convert_time_to_mins(checkpoint_data.time);
             }
             
             entrant_data->state.type = TIME_CHECKPOINT;
@@ -287,17 +310,17 @@ void add_new_time(event *evt, CP_Data checkpoint_data){
             entrant_data->state.location_ref = checkpoint_data.node; 
 
             /* if this is the last node on the course,
-             * the competitors has finished */
-            if(entrant_data->state.nodes_visited == course_data->path_size-1) {
+             * the competitor has finished */
+            if(entrant_data->state.nodes_visited >= course_data->path_size-1) {
                 entrant_data->state.type = COMPLETED;
-                strcpy(entrant_data->end_time, checkpoint_data.time);
+                entrant_data->end_time = convert_time_to_mins(checkpoint_data.time);
             } else {
                 while (!found && entrant_data->current_track->next != NULL) {
                     current_track = (track*) entrant_data->current_track->data;
-                    if(current_track->nodea == checkpoint_data.node 
-                            && current_track->nodeb == course_data->nodes[entrant_data->state.nodes_visited+1]
-                            || current_track->nodeb == checkpoint_data.node 
-                            && current_track->nodea == course_data->nodes[entrant_data->state.nodes_visited+1]){
+                    if((current_track->nodea == checkpoint_data.node 
+                            && current_track->nodeb == course_data->nodes[entrant_data->state.nodes_visited+1])
+                            || (current_track->nodeb == checkpoint_data.node 
+                            && current_track->nodea == course_data->nodes[entrant_data->state.nodes_visited+1])){
                         found = 1;
                     } else {
                          entrant_data->current_track = entrant_data->current_track->next;
@@ -323,16 +346,12 @@ void add_new_time(event *evt, CP_Data checkpoint_data){
             entrant_data->state.location_ref = checkpoint_data.node;
             
             /* record the time they reached the MC for delay calculations*/
-            strcpy(entrant_data->mc_time_stopped, checkpoint_data.time);
+            entrant_data->mc_time_stopped = convert_time_to_mins(checkpoint_data.time);
             break;
         /* Departed from medical checkpoint */
         case 'D':
             /* calculate the time spent a the checkpoint and record the delay accordingly*/
-            hours = calc_time_diff(entrant_data->mc_time_stopped, checkpoint_data.time);
-            mins = calc_time_diff(&entrant_data->mc_time_stopped[3], &checkpoint_data.time[3]);
-            
-            entrant_data->mc_time_delay_hours += hours;
-            entrant_data->mc_time_delay_mins += mins;
+            entrant_data->mc_time_delay += convert_time_to_mins(checkpoint_data.time) - entrant_data->mc_time_stopped;
             break;
         /* Excluded for failing medical checkpoint */
         case 'E':

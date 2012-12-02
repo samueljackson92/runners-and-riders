@@ -159,8 +159,8 @@ void read_entrants(FILE *file, event *e) {
         
         if(status != EOF) {
             entrant_data->state.type = NOT_STARTED;
-            strcpy(entrant_data->start_time, "00:00");
-            strcpy(entrant_data->end_time, "00:00");
+            entrant_data->start_time = 0;
+            entrant_data->end_time = 0;
 
             course = find_course(e->courselist, entrant_data->course);
             entrant_data->current_track = course->tracks.head;
@@ -169,6 +169,7 @@ void read_entrants(FILE *file, event *e) {
             entrant_data->state.location_ref = 0;
             entrant_data->state.type = NOT_STARTED;
             entrant_data->state.late = 0;
+            entrant_data->mc_time_delay = 0;
             
             new_element->data = entrant_data;
             new_element->next = NULL;

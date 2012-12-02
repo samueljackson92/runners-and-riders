@@ -86,7 +86,7 @@ int find_next_checkpoint(linked_list nodes, entrant * e) {
 }
 
 /* Convert an entrants status into a human readable string */
-void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]) {
+void convert_type_status_verbose(enum entrant_status type, char buffer[OUTPUT_BUFF]) {
     switch(type) {
         case NOT_STARTED:
             strcpy(buffer, "Not yet started.");
@@ -112,6 +112,32 @@ void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]) {
     }
 }
 
+void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]) {
+    switch(type) {
+        case NOT_STARTED:
+            strcpy(buffer, "NOT STARTED");
+            break;
+        case MC_CHECKPOINT:
+            strcpy(buffer, "AT MC");
+            break;
+        case ON_TRACK:
+            strcpy(buffer, "ON TRACK");
+            break;
+        case TIME_CHECKPOINT:
+            strcpy(buffer, "TIME CHECKPOINT");
+            break;
+        case COMPLETED:
+            strcpy(buffer,"COMPLETED");
+            break;
+        case EXCLUDED_MC:
+            strcpy(buffer,"EXCLUDED MC");
+            break;
+        case EXCLUDED_IR:
+            strcpy(buffer,"EXCLUDED IR");
+            break;
+    }
+}
+
 /* Function to convert the type of this node to a string */
 enum check_point convert_node_type(char type_string[3]){
     enum check_point type;
@@ -131,6 +157,18 @@ int convert_time_to_mins(char time[TIME_STRING_SIZE]) {
     mins = atoi(&time[3]);
 
     return (hours*60) + mins;
+}
+/* Convert minutes to a formatted time string */
+void convert_mins_to_time(int total_mins, char buff[TIME_STRING_SIZE]){
+    int hours = total_mins / 60;
+    int mins = total_mins % 60;
+    char h[3];
+    char m[3];
+    sprintf(h, "%.2d", hours);
+    sprintf(m, "%.2d", mins);
+    strcpy(buff, h);
+    strcat(buff, ":");
+    strcat(buff, m);
 }
 
 /* Calculate the different between the hours or minutes of a formatted string*/

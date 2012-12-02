@@ -21,7 +21,7 @@ extern "C" {
 #define OUTPUT_BUFF 50
 
 /*Convert a given entrant status into a user readable string*/
-void convert_type_status(enum entrant_status type, char buffer[OUTPUT_BUFF]);
+void convert_type_status_verbose(enum entrant_status type, char buffer[OUTPUT_BUFF]);
 
 /*Convert the given checkpoint string into an enum format*/
 enum check_point convert_node_type(char type_string[3]);
