@@ -106,7 +106,10 @@ void read_courses (FILE *file, event *e) {
             /*read in the number of nodes in the course*/
             fscanf(file, " %d", &course_data->path_size);
 
+            /*setup an array of tracks*/
             course_data->nodes = malloc(course_data->path_size * sizeof(int));
+            course_data->tracks.head = NULL;
+            course_data->tracks.tail = NULL;
             
             /* Read in an array of all the nodes in this course. */
             for (i=0; i<course_data->path_size; i++) {
