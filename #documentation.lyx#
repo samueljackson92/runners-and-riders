@@ -350,26 +350,9 @@ Generally, the code for the extended mission is pretty much the same as
 
 \begin_layout Standard
 On the whole the only major changes are that addition of a few more fields
- and enumerated values to some of the structures and case statements to
- select between the more realistic cases presented by the extended mission
- as well as an extra function to print out whether the entrants have been
- excluded and for what offense.
- Additionally, I also found that I need to add code that would account for
- the time that an entrant spends at a medical checkpoint and deducts this
- from their final score.
-\end_layout
-
-\begin_layout Subsection
-Track Estimation
-\end_layout
-
-\begin_layout Standard
-One additional part of program that was not required in the specification
- is the estimation of what track an entrant is probably on between the last
- checkpoint they visited and the next checkpoint they are expected to reach.
- This is done by using the last checkpoint that the entrant has checked
- in at and then find the next checkpoint that they will reach provided they
- stay on the current course.
+ to some of the case statements to select between the more realistic cases
+ presented by the extended mission as well as an extra function to print
+ out whether the entrants have been ex
 \end_layout
 
 \begin_layout Section
