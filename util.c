@@ -77,7 +77,7 @@ int find_next_checkpoint(linked_list nodes, entrant * e) {
     while(!found && current->next != NULL) {
         count++;
         node_data = (node*) current->data;
-        if(count >= i && node_data->type == CP) {
+        if(count >= i && node_data->type == CP || node_data->type == MC) {
             found = 1;
         }
         current = current->next;
@@ -147,6 +147,8 @@ enum check_point convert_node_type(char type_string[3]){
         type = CP;
     } else if (!strcmp(type_string, "JN")) {
         type = JN;
+    } else if (!strcmp(type_string, "MC")) {
+        type = MC;
     }
     return type;
 }

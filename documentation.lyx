@@ -370,6 +370,19 @@ One additional part of program that was not required in the specification
  This is done by using the last checkpoint that the entrant has checked
  in at and then find the next checkpoint that they will reach provided they
  stay on the current course.
+ Then by using the time that they last reached a checkpoint and the cumulative
+ times of the tracks they should have traversed and comparing this with
+ the most recent time, we can predict roughly which track we expect them
+ to be on.
+ 
+\end_layout
+
+\begin_layout Standard
+Note that if an entrant is running late to the next checkpoint, this is
+ flagged and the entrant's predicted position will not be updated to be
+ passed the checkpoint they are next expected.
+ This flag can then be used to output to the user that the current entrant
+ is running late and they they might have become lost at one of the junctions.
 \end_layout
 
 \begin_layout Section
@@ -855,6 +868,11 @@ Log of Program Execution
 \end_layout
 
 \begin_layout Standard
+This section provides a log of the output generated when running the program
+ for each of the major functions the the user can do with the system.
+\end_layout
+
+\begin_layout Standard
 \begin_inset listings
 inline false
 status open
@@ -942,6 +960,26 @@ Enter location and name of the entrants file:
 
 event_3/entrants.txt
 \end_layout
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Loading the data files on application startup.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset listings
+inline false
+status open
 
 \begin_layout Plain Layout
 
@@ -1317,6 +1355,26 @@ Enter name of the checkpoint files:
 
 event_3/cp_times_5.txt
 \end_layout
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Loading the checkpoint time data files into the system.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset listings
+inline false
+status open
 
 \begin_layout Plain Layout
 
@@ -2081,9 +2139,414 @@ Enter an Option:
 
 \begin_layout Plain Layout
 
+\begin_inset Caption
+
+\begin_layout Plain Layout
+
+Outputting the table of results after loading the check point times for
+ event 3.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Endurance Horse Race - The Main Event
 \end_layout
 
 \begin_layout Plain Layout
+
+27th June 2012
+\end_layout
+
+\begin_layout Plain Layout
+
+Start Time: 07:30
+\end_layout
+
+\begin_layout Plain Layout
+
+Enter an Option:
+\end_layout
+
+\begin_layout Plain Layout
+
+0  - Exit
+\end_layout
+
+\begin_layout Plain Layout
+
+1  - Event Details
+\end_layout
+
+\begin_layout Plain Layout
+
+2  - Query Competitor
+\end_layout
+
+\begin_layout Plain Layout
+
+3  - Check how many competitors not yet started
+\end_layout
+
+\begin_layout Plain Layout
+
+4  - Check how many competitors are out on courses
+\end_layout
+
+\begin_layout Plain Layout
+
+5  - Check how many competitors have finished
+\end_layout
+
+\begin_layout Plain Layout
+
+6  - Manually update a competitor
+\end_layout
+
+\begin_layout Plain Layout
+
+7  - Read in a file of updates
+\end_layout
+
+\begin_layout Plain Layout
+
+8  - Print table of results
+\end_layout
+
+\begin_layout Plain Layout
+
+9  - Print entrants excluded at medical checkpoints
+\end_layout
+
+\begin_layout Plain Layout
+
+10 - Print entrants excluded at regular checkpoints
+\end_layout
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+
+Printing the event details
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+Enter id for the competitor:
+\end_layout
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\begin_layout Plain Layout
+COMPETITOR 4:
+\end_layout
+
+\begin_layout Plain Layout
+Name: Amber Abbey
+\end_layout
+
+\begin_layout Plain Layout
+Status: Out on track.
+\end_layout
+
+\begin_layout Plain Layout
+Last recorded time: 09:26
+\end_layout
+
+\begin_layout Plain Layout
+Last checkpoint visited: 13
+\end_layout
+
+\begin_layout Plain Layout
+Track Reference No.: 13
+\end_layout
+
+\begin_layout Plain Layout
+Presumed on track between node 2 and node 13
+\end_layout
+
+\begin_layout Plain Layout
+Enter an Option:
+\end_layout
+
+\begin_layout Plain Layout
+0  - Exit
+\end_layout
+
+\begin_layout Plain Layout
+1  - Event Details
+\end_layout
+
+\begin_layout Plain Layout
+2  - Query Competitor
+\end_layout
+
+\begin_layout Plain Layout
+3  - Check how many competitors not yet started
+\end_layout
+
+\begin_layout Plain Layout
+4  - Check how many competitors are out on courses
+\end_layout
+
+\begin_layout Plain Layout
+5  - Check how many competitors have finished
+\end_layout
+
+\begin_layout Plain Layout
+6  - Manually update a competitor
+\end_layout
+
+\begin_layout Plain Layout
+7  - Read in a file of updates
+\end_layout
+
+\begin_layout Plain Layout
+8  - Print table of results
+\end_layout
+
+\begin_layout Plain Layout
+9  - Print entrants excluded at medical checkpoints
+\end_layout
+
+\begin_layout Plain Layout
+10 - Print entrants excluded at regular checkpoints
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+
+Querying competitor #4
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+Enter the type of check point (T|I|A|D|E):
+\end_layout
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\begin_layout Plain Layout
+Enter the competitor number:
+\end_layout
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\begin_layout Plain Layout
+Enter the check point number:
+\end_layout
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\begin_layout Plain Layout
+Enter the time recorded:
+\end_layout
+
+\begin_layout Plain Layout
+10:00
+\end_layout
+
+\begin_layout Plain Layout
+Enter an Option:
+\end_layout
+
+\begin_layout Plain Layout
+0  - Exit
+\end_layout
+
+\begin_layout Plain Layout
+1  - Event Details
+\end_layout
+
+\begin_layout Plain Layout
+2  - Query Competitor
+\end_layout
+
+\begin_layout Plain Layout
+3  - Check how many competitors not yet started
+\end_layout
+
+\begin_layout Plain Layout
+4  - Check how many competitors are out on courses
+\end_layout
+
+\begin_layout Plain Layout
+5  - Check how many competitors have finished
+\end_layout
+
+\begin_layout Plain Layout
+6  - Manually update a competitor
+\end_layout
+
+\begin_layout Plain Layout
+7  - Read in a file of updates
+\end_layout
+
+\begin_layout Plain Layout
+8  - Print table of results
+\end_layout
+
+\begin_layout Plain Layout
+9  - Print entrants excluded at medical checkpoints
+\end_layout
+
+\begin_layout Plain Layout
+10 - Print entrants excluded at regular checkpoints
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+
+Updating a competitor manually.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+Enter an Option:
+\end_layout
+
+\begin_layout Plain Layout
+0  - Exit
+\end_layout
+
+\begin_layout Plain Layout
+1  - Event Details
+\end_layout
+
+\begin_layout Plain Layout
+2  - Query Competitor
+\end_layout
+
+\begin_layout Plain Layout
+3  - Check how many competitors not yet started
+\end_layout
+
+\begin_layout Plain Layout
+4  - Check how many competitors are out on courses
+\end_layout
+
+\begin_layout Plain Layout
+5  - Check how many competitors have finished
+\end_layout
+
+\begin_layout Plain Layout
+6  - Manually update a competitor
+\end_layout
+
+\begin_layout Plain Layout
+7  - Read in a file of updates
+\end_layout
+
+\begin_layout Plain Layout
+8  - Print table of results
+\end_layout
+
+\begin_layout Plain Layout
+9  - Print entrants excluded at medical checkpoints
+\end_layout
+
+\begin_layout Plain Layout
+10 - Print entrants excluded at regular checkpoints
+\end_layout
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\begin_layout Plain Layout
+64 competitors have not yet started
+\end_layout
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Querying how many competitors have not yet started.
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -2096,8 +2559,119 @@ Enter an Option:
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+Competitors Excluded from Regular Checkpoints
+\end_layout
+
+\begin_layout Plain Layout
+------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+|Competitor           |  Node  |  Time   |
+\end_layout
+
+\begin_layout Plain Layout
+|----------------------------------------|
+\end_layout
+
+\begin_layout Plain Layout
+|Beau Fudge           |   09   |  09:49  |
+\end_layout
+
+\begin_layout Plain Layout
+|Bubbles Fudge        |   17   |  09:57  |
+\end_layout
+
+\begin_layout Plain Layout
+------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+Enter an Option:
+\end_layout
+
+\begin_layout Plain Layout
+0  - Exit
+\end_layout
+
+\begin_layout Plain Layout
+1  - Event Details
+\end_layout
+
+\begin_layout Plain Layout
+2  - Query Competitor
+\end_layout
+
+\begin_layout Plain Layout
+3  - Check how many competitors not yet started
+\end_layout
+
+\begin_layout Plain Layout
+4  - Check how many competitors are out on courses
+\end_layout
+
+\begin_layout Plain Layout
+5  - Check how many competitors have finished
+\end_layout
+
+\begin_layout Plain Layout
+6  - Manually update a competitor
+\end_layout
+
+\begin_layout Plain Layout
+7  - Read in a file of updates
+\end_layout
+
+\begin_layout Plain Layout
+8  - Print table of results
+\end_layout
+
+\begin_layout Plain Layout
+9  - Print entrants excluded at medical checkpoints
+\end_layout
+
+\begin_layout Plain Layout
+10 - Print entrants excluded at regular checkpoints
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Printing how many competitors are excluded for taking the wrong route after
+ loading some of the checkpoint time files.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Code Appendix
+\end_layout
+
+\begin_layout Standard
+The final part of this document provides a full printout of the code that
+ I have written to solve this assignment.
+ This printout is ordered with the main mission first, followed by the code
+ for the extended mission.
 \end_layout
 
 \end_body

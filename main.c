@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
                 "10 - Print entrants excluded at regular checkpoints\n");
         
         scanf(" %d", &option);
-        clear_screen();
+        /*clear_screen();*/
         
         switch(option) {
             case 1:
@@ -92,6 +92,9 @@ int main(int argc, char** argv) {
                 break;
             case 10: /* Print a table of entrants who have been excluded for getting lost */
                 print_entrants_excluded(evt.entrantlist, EXCLUDED_IR);
+                break;
+            default:
+                printf("That was not an option!");
                 break;
         }
     } while (option != 0);
@@ -195,17 +198,22 @@ void read_updates(event *e) {
     
     FILE *file = fopen(filename, "r");
     
-    /* Read in an update and add it to the system. */
-    while (!feof(file)){
-        fscanf(file, "%c %d %d %5[0-9:]s", &checkpoint_data.type, &checkpoint_data.node, 
-                &checkpoint_data.competitor_num, checkpoint_data.time);
-        add_new_time(e, checkpoint_data);
+    if(file != NULL) {
+        /* Read in an update and add it to the system. */
+        while (!feof(file)){
+            fscanf(file, "%c %d %d %5[0-9:]s", &checkpoint_data.type, &checkpoint_data.node, 
+                    &checkpoint_data.competitor_num, checkpoint_data.time);
+            add_new_time(e, checkpoint_data);
+        }
+        fclose(file);
+    
+        /* Update the rest of the competitors' positions relative to the most recent time. */
+        update_others(e, checkpoint_data);
+    } else {
+        printf("Error reading file!");
+        exit(0);
     }
-    
-    fclose(file);
-    
-    /* Update the rest of the competitors' positions relative to the most recent time. */
-    update_others(e, checkpoint_data);
+
 }
 
 /* Function defines how to print an entrant in a format that fits the results table. */
