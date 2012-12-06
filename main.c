@@ -118,7 +118,7 @@ void query_competitor(linked_list entrantlist) {
     
     /* get competitor id from user */
     printf("Enter id for the competitor:\n");
-    scanf("%d", &entrant_id);
+    scanf(" %d", &entrant_id);
     
     clear_screen();
     
