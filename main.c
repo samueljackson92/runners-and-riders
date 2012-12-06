@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
                 "10 - Print entrants excluded at regular checkpoints\n");
         
         scanf(" %d", &option);
-        /*clear_screen();*/
+        clear_screen();
         
         switch(option) {
             case 1:
