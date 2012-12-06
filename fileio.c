@@ -45,18 +45,19 @@ void read_file_data(event *e){
 
 /* Generic read file function  which takes a file specific processing function as a parameter */
 void read_file(char filename[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE *, event *), event *e){
-    FILE *file;
+    FILE *file = NULL;
     
     file = fopen(filename, "r");
     if(file != NULL) {
         /*file opened successfully, read it.*/
         read_file_func(file, e);
+        fclose(file);
     } else {
         /*couldn't open file, output error*/
-        printf("Error opening file!\n");
+        printf("Error opening file:\n");
         printf("%s\n", filename);
+        exit(0);
     }
-    fclose(file);
 }
 
 /* Function to read the details of this event */
