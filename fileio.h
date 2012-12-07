@@ -25,7 +25,7 @@ extern "C" {
 void read_file_data(event *e);
 
 /*open a file for reading with the given name and a function to read the contents.*/
-void read_file(char name[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE *file, event *e), event *e);
+int read_file(char name[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE *file, event *e), event *e);
 
 /*function to read event details from a file.*/
 void read_event_details(FILE *file, event *e);
