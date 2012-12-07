@@ -8,43 +8,54 @@
 #include "util.h"
 
 /* 
- * File:   util.c
+ * File:   fileio.c
  * Author: Samuel Jackson
  *
- * File contains functions used by the main actions that the user can call from
- * the main menu.
+ * File contains functions for reading in the data files for an event.
  * 
  * Created on 13 November 2012, 14:34
  */
 
 /* Read in all of the data files for this event */
 void read_file_data(event *e){
+    int success;
     char filename[MAX_FILEPATH_LENGTH];
 
-    printf("Enter location and name of event details file:\n");
-    scanf(" %100s", filename);
-    read_file(filename, &read_event_details, e);
+    do {
+        printf("Enter location and name of event details file:\n");
+        scanf(" %100s", filename);
+        success = read_file(filename, &read_event_details, e);
+    } while (!success);
     
-    printf("Enter location and name of the nodes file:\n");
-    scanf(" %100s", filename);
-    read_file(filename, &read_nodes, e);
+    do {
+        printf("Enter location and name of the nodes file:\n");
+        scanf(" %100s", filename);
+        success = read_file(filename, &read_nodes, e);
+    } while (!success);
     
-    printf("Enter location and name of the tracks file:\n");
-    scanf(" %100s", filename);
-    read_file(filename, &read_tracks, e);
+    do {
+        printf("Enter location and name of the tracks file:\n");
+        scanf(" %100s", filename);
+        success = read_file(filename, &read_tracks, e);
+    } while (!success);
     
-    printf("Enter location and name of the courses file:\n");
-    scanf(" %100s", filename);
-    read_file(filename, &read_courses, e);
+    do {
+        printf("Enter location and name of the courses file:\n");
+        scanf(" %100s", filename);
+        success = read_file(filename, &read_courses, e);
+    } while (!success);
     
-    printf("Enter location and name of the entrants file:\n");
-    scanf(" %100s", filename);
-    read_file(filename, &read_entrants, e);
+    do {
+        printf("Enter location and name of the entrants file:\n");
+        scanf(" %100s", filename);
+        success = read_file(filename, &read_entrants, e);
+    } while (!success);
     
 }
 
 /* Generic read file function  which takes a file specific processing function as a parameter */
-void read_file(char filename[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE *, event *), event *e){
+int read_file(char filename[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE *, event *), event *e){
+    int status = 0;
     FILE *file = NULL;
     
     file = fopen(filename, "r");
@@ -52,12 +63,14 @@ void read_file(char filename[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE 
         /*file opened successfully, read it.*/
         read_file_func(file, e);
         fclose(file);
+        status = 1;
     } else {
         /*couldn't open file, output error*/
         printf("Error opening file:\n");
         printf("%s\n", filename);
-        exit(0);
     }
+    
+    return status;
 }
 
 /* Function to read the details of this event */
