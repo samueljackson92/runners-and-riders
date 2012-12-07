@@ -63,9 +63,9 @@ void read_file(char filename[MAX_FILEPATH_LENGTH], void (*read_file_func) (FILE 
 /* Function to read the details of this event */
 void read_event_details(FILE *file, event *e){
     /*read in the details for the event*/
-    fscanf(file, " %[A-Za-z0-9- ]s", e->name);
-    fscanf(file, " %[a-zA-Z0-9 ]s", e->date);
-    fscanf(file, " %[0-9:]s", e->start_time);
+    fscanf(file, " %[A-Za-z0-9- ]\n", e->name);
+    fscanf(file, " %[a-zA-Z0-9 ]\n", e->date);
+    fscanf(file, " %[0-9:]\n", e->start_time);
 }
 
 /* Function to read in the nodes file*/
@@ -158,7 +158,7 @@ void read_entrants(FILE *file, event *e) {
         entrant_data = malloc(sizeof(entrant));
  
         new_element = malloc(sizeof(list_node));
-        status = fscanf(file, " %d %c %[a-zA-Z ]s", &entrant_data->number,
+        status = fscanf(file, " %d %c %[a-zA-Z ]\n", &entrant_data->number,
                 &entrant_data->course, entrant_data->name);
         
         if(status != EOF) {

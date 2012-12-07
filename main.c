@@ -192,6 +192,7 @@ void manually_read_data(event *evt) {
 void read_updates(event *e) {
     char filename[MAX_FILEPATH_LENGTH];
     CP_Data checkpoint_data;
+    int status = 4, count = 0;
     
     printf("Enter name of the checkpoint files:\n");
     scanf(" %100s", filename);
@@ -200,10 +201,15 @@ void read_updates(event *e) {
     
     if(file != NULL) {
         /* Read in an update and add it to the system. */
-        while (!feof(file)){
-            fscanf(file, "%c %d %d %5[0-9:]s", &checkpoint_data.type, &checkpoint_data.node, 
+        while (!feof(file) && status == 4){
+            status = fscanf(file, "%c %d %d %5[0-9:]\n", &checkpoint_data.type, &checkpoint_data.node, 
                     &checkpoint_data.competitor_num, checkpoint_data.time);
-            add_new_time(e, checkpoint_data);
+            if(status == 4) {
+                add_new_time(e, checkpoint_data);
+            } else {
+                printf("Parse error on line %d. Stopping read.\n", count);
+            }
+            count++;
         }
         fclose(file);
     
