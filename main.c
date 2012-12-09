@@ -60,6 +60,7 @@ int main(int argc, char** argv) {
         clear_screen();
         
         switch(option) {
+            case 0: break;
             case 1:
                 print_event_data(&evt);
                 break;
