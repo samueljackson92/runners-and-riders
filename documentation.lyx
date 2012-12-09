@@ -99,8 +99,8 @@ name "sub:Data-Structures"
 This assignment required a large set of pre-generated data, given in the
  form of individual files, to be read into and interpreted by the application.
  One of the first decisions that I made when planning the design of my applicati
-on was to create a collection of separate C structs to store the data read
- in from each of these files in a meaningful way.
+on was to create a collection of separate C structures to store the data
+ read in from each of these files in a meaningful way.
  Therefore, in my application I have one data structure for each of the
  types of file that were outlined in the brief.
  
@@ -111,13 +111,14 @@ When initially writing the structures, they only stored the information
  that was exactly specified in the brief.
  For example, initially the only fields in the event structure were the
  name, date and time fields.
- Other fields that cross reference with other structs or hold application
- generated data were added when I designed the application logic as a whole.
+ Other fields that are pointers to other structures or hold application
+ generated data were added later as I designed the rest of the application
+ logic.
 \end_layout
 
 \begin_layout Standard
-Having a structure for each file of information in my program allowed me
- to keep data pool together into logical 
+Having a structure for each discrete instance of information in my program
+ allowed me to keep data pooled together into logical 
 \begin_inset Quotes eld
 \end_inset
 
@@ -128,21 +129,23 @@ chunks
  which I could pass from one function to another depending on what data
  that function requires.
  In order to keep the memory requirements of my application to an minimum
- and to allow them to be modified, I have tried to pass the structures the
- application uses to functions mostly by reference so that all the data
- in the structure need not be copied needlessly.
+ while still allowing them to be modified, I have tried to pass the structures
+ the application uses to functions mostly by reference using pointers so
+ that all the data in the structure need not be copied to local variables
+ needlessly.
  This is particularly relevant with the larger data structures in my application
  such as the event and entrant structures.
  
 \end_layout
 
 \begin_layout Standard
-Also, group data into logical chunks keeps the number of parameters being
+Also, grouping data into logical chunks keeps the number of parameters being
  passed to each function smaller and therefore reduces code complexity and
- increases readability.
+ increases code readability.
  This also helps with the maintainability of the program as modifying a
  field or adding another variable to a structure does not require changing
- (potentially many) function declarations to access it later in the program.
+ (potentially many) function declarations to access it later in the program
+ execution.
 \end_layout
 
 \begin_layout Standard
@@ -166,7 +169,7 @@ state
 \end_layout
 
 \begin_layout Standard
-Due to there wide use across the application, I decided to separate the
+Due to their wide use across the application, I decided to separate the
  definition of these structures into a single header file that could be
  included by each of the c files in the program.
  Within this file, the structure definitions as wrapped in a #ifndef macro
@@ -175,7 +178,7 @@ Due to there wide use across the application, I decided to separate the
 
 \begin_layout Standard
 While almost all data structures used by the application are stored in the
- structures header file, however a couple of structures are defined separately.
+ structures header file, a couple of structures are defined separately.
  In my application, I have defined a separate 
 \begin_inset Quotes eld
 \end_inset
@@ -218,20 +221,20 @@ Each instance of a data item read in from a file (e.g.
  so we need to have a data structure that can be dynamically sized.
  The alternative would be to count the number of lines in the file first
  and then allocate an array of the appropriate size.
- Alternatively you could also reallocate more memory to and existing array,
- but both of these options have a higher time complexity than simply using
- a linked list with tail insertion.
- 
+ You could also reallocate more memory to and existing array, but both of
+ these options have a higher time complexity than simply using a linked
+ list with tail insertion.
 \end_layout
 
 \begin_layout Standard
-One exception is the use of an array for storing a list of node id's for
- a course.
- This is because we can read in the number of nodes in the course ahead
- of reading in the individual numbers and therefore can allocate an array
- of the appropriate size in advance.
- This also means that we can index the node we last visited quickly as we
- don't need to search through the entire list to find the item we need.
+A final note is that, where possible, I have also defined macros rather
+ than using literal numbers across the system.
+ This makes it easier to modify the code at a later date should a requirement
+ change.
+ For example, at the moment a file path is expected to be no long than 100
+ characters, but in the future this can easily be changed if required by
+ only altering the macro definition of the size in order to change it across
+ the program.
 \end_layout
 
 \begin_layout Subsection
@@ -240,10 +243,10 @@ Main Mission
 
 \begin_layout Standard
 The majority of the code that was written for this assignment was developed
- when I was planning and writing the main mission.
- In other words, the bulk of the applications code was written for the main
- mission, with only a few changes being made between the main and extended
- versions.
+ when I was planning and writing the main mission with only a few changes
+ being made between the main and extended versions.
+ This section therefore provides a discussion of the design which applies
+ to both parts.
 \end_layout
 
 \begin_layout Standard
@@ -258,12 +261,12 @@ reference "sub:Data-Structures"
 
 .
  The other parts to the system include the main, fileio, util and linked_list
- files along with the accompanying headers.
+ files along with their accompanying headers.
 \end_layout
 
 \begin_layout Standard
 The main file contains the entry point into the application and contains
- all the majority of the high level functions that satisfy the key requirements
+ the majority of the high level functions that satisfy the key requirements
  of the system as outlined in section 6.1 of the brief (excluding file reading
  operations).
  This includes functions to print a table of entrants, update the system
@@ -285,8 +288,9 @@ high level
 \end_inset
 
  than the functions contained in the main file.
- The functions in this file are concerned with smaller tasks, such as converting
- a string time to minutes or converting enumerations to human readable strings.
+ The functions in this file are concerned with smaller, more general tasks,
+ such as converting a string time to minutes or converting enumerations
+ to human readable strings.
  It also contains functions for traversing linked lists of a specific type
  which are used in both the main file and the fileio file and therefore
  benefit from being in a seperate file that can be included in both files.
@@ -313,9 +317,9 @@ comparable
 \begin_inset Quotes erd
 \end_inset
 
- data type which could be passed to and from a function pointer, but when
- I began to implement this it seemed like I was going to be writing more
- code that simply have a hard coded version to search for each type.
+ data type which could be passed to and returned from a function pointer,
+ but when I began to implement this it seemed like I was going to be writing
+ more code than simply having a hard coded version to search for each type.
  I therefore chose to use a specific search function for each type of structure
  stored within a linked list.
  This means that there is some code repetition, but I feel that this is
@@ -334,6 +338,16 @@ The first part of the system that I designed and wrote was the fileio file.
  that takes a function pointer to one of the specific file reading functions.
  Alongside this I also have a function which prompts the user for the full
  file path for each of the files required by the program.
+\end_layout
+
+\begin_layout Standard
+The final key file in the system is the Linked_list file.
+ This file implements a couple of simple functions that work with any data
+ type to add a new element to a linked list and also to traverse the list
+ and execute a function on each node in the list.
+ These functions were designed so that they could be reused across the program
+ and potentially reused in other applications and are hence separated from
+ the rest of the application logic.
 \end_layout
 
 \begin_layout Subsection
@@ -355,7 +369,7 @@ On the whole the only major changes are that addition of a few more fields
  as well as an extra function to print out whether the entrants have been
  excluded and for what offense.
  Additionally, I also found that I need to add code that would account for
- the time that an entrant spends at a medical checkpoint and deducts this
+ the delay that an entrant incurs at a medical checkpoint and deducts this
  from their final score.
 \end_layout
 
@@ -383,6 +397,33 @@ Note that if an entrant is running late to the next checkpoint, this is
  passed the checkpoint they are next expected.
  This flag can then be used to output to the user that the current entrant
  is running late and they they might have become lost at one of the junctions.
+\end_layout
+
+\begin_layout Subsection
+Further Development
+\end_layout
+
+\begin_layout Standard
+While I feel that the program I have produced satisfies the requirements
+ of the brief provided, I believe that their is still room for improvement
+ in this application.
+ One area I feel could easily be improved in this application is the amount
+ of error checking done.
+ I feel that using scanf and fscanf to take input for the user and from
+ files could been implemented to provide better error handling e.g.
+ handling incorrect types (letters when expecting numbers) or handling file
+ parsing errors.
+\end_layout
+
+\begin_layout Standard
+I also feel that in a more sophisticated implementation rethinking the way
+ the system is designed may be necessary.
+ I forecast that to handle a realistic version of this problem may require
+ the full representation of a graph in memory (using an adjacency list or
+ similar) and possibly change the way some data types are stored from a
+ linked list to an array for quicker positional access.
+ But for the purposes of this assignment, I feel that the supplied solution
+ works equally well.
 \end_layout
 
 \begin_layout Section
@@ -870,6 +911,10 @@ Log of Program Execution
 \begin_layout Standard
 This section provides a log of the output generated when running the program
  for each of the major functions the the user can do with the system.
+ This log of program execution uses the extended mission version of the
+ application as it is almost identical to the main mission, and therefore
+ demonstrates all parts of the required functionality.
+ This log of program execution uses the data files provided in event 3.
 \end_layout
 
 \begin_layout Standard
@@ -2142,7 +2187,6 @@ Enter an Option:
 \begin_inset Caption
 
 \begin_layout Plain Layout
-
 Outputting the table of results after loading the check point times for
  event 3.
 \end_layout
@@ -2242,7 +2286,6 @@ Enter an Option:
 \begin_inset Caption
 
 \begin_layout Plain Layout
-
 Printing the event details
 \end_layout
 
@@ -2262,86 +2305,107 @@ inline false
 status open
 
 \begin_layout Plain Layout
+
 Enter id for the competitor:
 \end_layout
 
 \begin_layout Plain Layout
+
 4
 \end_layout
 
 \begin_layout Plain Layout
+
 COMPETITOR 4:
 \end_layout
 
 \begin_layout Plain Layout
+
 Name: Amber Abbey
 \end_layout
 
 \begin_layout Plain Layout
+
 Status: Out on track.
 \end_layout
 
 \begin_layout Plain Layout
+
 Last recorded time: 09:26
 \end_layout
 
 \begin_layout Plain Layout
+
 Last checkpoint visited: 13
 \end_layout
 
 \begin_layout Plain Layout
+
 Track Reference No.: 13
 \end_layout
 
 \begin_layout Plain Layout
+
 Presumed on track between node 2 and node 13
 \end_layout
 
 \begin_layout Plain Layout
+
 Enter an Option:
 \end_layout
 
 \begin_layout Plain Layout
+
 0  - Exit
 \end_layout
 
 \begin_layout Plain Layout
+
 1  - Event Details
 \end_layout
 
 \begin_layout Plain Layout
+
 2  - Query Competitor
 \end_layout
 
 \begin_layout Plain Layout
+
 3  - Check how many competitors not yet started
 \end_layout
 
 \begin_layout Plain Layout
+
 4  - Check how many competitors are out on courses
 \end_layout
 
 \begin_layout Plain Layout
+
 5  - Check how many competitors have finished
 \end_layout
 
 \begin_layout Plain Layout
+
 6  - Manually update a competitor
 \end_layout
 
 \begin_layout Plain Layout
+
 7  - Read in a file of updates
 \end_layout
 
 \begin_layout Plain Layout
+
 8  - Print table of results
 \end_layout
 
 \begin_layout Plain Layout
+
 9  - Print entrants excluded at medical checkpoints
 \end_layout
 
 \begin_layout Plain Layout
+
 10 - Print entrants excluded at regular checkpoints
 \end_layout
 
@@ -2354,7 +2418,6 @@ Enter an Option:
 \begin_inset Caption
 
 \begin_layout Plain Layout
-
 Querying competitor #4
 \end_layout
 
@@ -2374,82 +2437,102 @@ inline false
 status open
 
 \begin_layout Plain Layout
+
 Enter the type of check point (T|I|A|D|E):
 \end_layout
 
 \begin_layout Plain Layout
+
 T
 \end_layout
 
 \begin_layout Plain Layout
+
 Enter the competitor number:
 \end_layout
 
 \begin_layout Plain Layout
+
 4
 \end_layout
 
 \begin_layout Plain Layout
+
 Enter the check point number:
 \end_layout
 
 \begin_layout Plain Layout
+
 1
 \end_layout
 
 \begin_layout Plain Layout
+
 Enter the time recorded:
 \end_layout
 
 \begin_layout Plain Layout
+
 10:00
 \end_layout
 
 \begin_layout Plain Layout
+
 Enter an Option:
 \end_layout
 
 \begin_layout Plain Layout
+
 0  - Exit
 \end_layout
 
 \begin_layout Plain Layout
+
 1  - Event Details
 \end_layout
 
 \begin_layout Plain Layout
+
 2  - Query Competitor
 \end_layout
 
 \begin_layout Plain Layout
+
 3  - Check how many competitors not yet started
 \end_layout
 
 \begin_layout Plain Layout
+
 4  - Check how many competitors are out on courses
 \end_layout
 
 \begin_layout Plain Layout
+
 5  - Check how many competitors have finished
 \end_layout
 
 \begin_layout Plain Layout
+
 6  - Manually update a competitor
 \end_layout
 
 \begin_layout Plain Layout
+
 7  - Read in a file of updates
 \end_layout
 
 \begin_layout Plain Layout
+
 8  - Print table of results
 \end_layout
 
 \begin_layout Plain Layout
+
 9  - Print entrants excluded at medical checkpoints
 \end_layout
 
 \begin_layout Plain Layout
+
 10 - Print entrants excluded at regular checkpoints
 \end_layout
 
@@ -2462,7 +2545,6 @@ Enter an Option:
 \begin_inset Caption
 
 \begin_layout Plain Layout
-
 Updating a competitor manually.
 \end_layout
 
@@ -2482,58 +2564,72 @@ inline false
 status open
 
 \begin_layout Plain Layout
+
 Enter an Option:
 \end_layout
 
 \begin_layout Plain Layout
+
 0  - Exit
 \end_layout
 
 \begin_layout Plain Layout
+
 1  - Event Details
 \end_layout
 
 \begin_layout Plain Layout
+
 2  - Query Competitor
 \end_layout
 
 \begin_layout Plain Layout
+
 3  - Check how many competitors not yet started
 \end_layout
 
 \begin_layout Plain Layout
+
 4  - Check how many competitors are out on courses
 \end_layout
 
 \begin_layout Plain Layout
+
 5  - Check how many competitors have finished
 \end_layout
 
 \begin_layout Plain Layout
+
 6  - Manually update a competitor
 \end_layout
 
 \begin_layout Plain Layout
+
 7  - Read in a file of updates
 \end_layout
 
 \begin_layout Plain Layout
+
 8  - Print table of results
 \end_layout
 
 \begin_layout Plain Layout
+
 9  - Print entrants excluded at medical checkpoints
 \end_layout
 
 \begin_layout Plain Layout
+
 10 - Print entrants excluded at regular checkpoints
 \end_layout
 
 \begin_layout Plain Layout
+
 3
 \end_layout
 
 \begin_layout Plain Layout
+
 64 competitors have not yet started
 \end_layout
 
@@ -2565,78 +2661,97 @@ inline false
 status open
 
 \begin_layout Plain Layout
+
 Competitors Excluded from Regular Checkpoints
 \end_layout
 
 \begin_layout Plain Layout
+
 ------------------------------------------
 \end_layout
 
 \begin_layout Plain Layout
+
 |Competitor           |  Node  |  Time   |
 \end_layout
 
 \begin_layout Plain Layout
+
 |----------------------------------------|
 \end_layout
 
 \begin_layout Plain Layout
+
 |Beau Fudge           |   09   |  09:49  |
 \end_layout
 
 \begin_layout Plain Layout
+
 |Bubbles Fudge        |   17   |  09:57  |
 \end_layout
 
 \begin_layout Plain Layout
+
 ------------------------------------------
 \end_layout
 
 \begin_layout Plain Layout
+
 Enter an Option:
 \end_layout
 
 \begin_layout Plain Layout
+
 0  - Exit
 \end_layout
 
 \begin_layout Plain Layout
+
 1  - Event Details
 \end_layout
 
 \begin_layout Plain Layout
+
 2  - Query Competitor
 \end_layout
 
 \begin_layout Plain Layout
+
 3  - Check how many competitors not yet started
 \end_layout
 
 \begin_layout Plain Layout
+
 4  - Check how many competitors are out on courses
 \end_layout
 
 \begin_layout Plain Layout
+
 5  - Check how many competitors have finished
 \end_layout
 
 \begin_layout Plain Layout
+
 6  - Manually update a competitor
 \end_layout
 
 \begin_layout Plain Layout
+
 7  - Read in a file of updates
 \end_layout
 
 \begin_layout Plain Layout
+
 8  - Print table of results
 \end_layout
 
 \begin_layout Plain Layout
+
 9  - Print entrants excluded at medical checkpoints
 \end_layout
 
 \begin_layout Plain Layout
+
 10 - Print entrants excluded at regular checkpoints
 \end_layout
 
