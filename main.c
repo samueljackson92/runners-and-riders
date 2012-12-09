@@ -58,6 +58,7 @@ int main(int argc, char** argv) {
         clear_screen();
         
         switch(option) {
+            case 0: break;
             case 1:
                 print_event_data(&evt);
                 break;
@@ -84,6 +85,9 @@ int main(int argc, char** argv) {
                 break;
             case 8: /* Print out a table of results */
                 print_results(evt.entrantlist);
+                break;
+            default:
+                printf("That was not an option!\n");
                 break;
         }
     } while (option != 0);
