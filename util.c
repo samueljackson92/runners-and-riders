@@ -77,8 +77,10 @@ int find_next_checkpoint(linked_list nodes, entrant * e) {
     while(!found && current->next != NULL) {
         count++;
         node_data = (node*) current->data;
-        if(count >= i && node_data->type == CP || node_data->type == MC) {
-            found = 1;
+        if(node_data->type == CP || node_data->type == MC) {
+            if (count >= 1) {
+                found = 1;
+            }
         }
         current = current->next;
     }
